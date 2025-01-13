@@ -4,9 +4,6 @@ The registry for Trilinos images can be found here:
 
 [Trilinos Container Registry](https://gitlab-ex.sandia.gov/trilinos-project/trilinos-containers/container_registry)
 
-# Current PR development environment images
-**registry-ex.sandia.gov/trilinos-project/trilinos-containers/rhel8/trilinos-pr-env:gcc-8.5.0**
-
 # Getting started
 1. You need a machine where you can run containers.  You need podman or docker on the machine.  Rhel8 will have podman by default; windows and mac users can install docker and these should work.  Currently all of the containers are built for x86-64 and need to be run on capable hardware.
 
@@ -19,35 +16,37 @@ password: <your password for gitlab-ex>
 
 1. Pull down the image:
 ```
-podman pull registry-ex.sandia.gov/trilinos-project/trilinos-containers/rhel8/trilinos-pr-env:gcc-8.5.0
+podman pull registry-ex.sandia.gov/trilinos-project/trilinos-containers/experimental/ubi8-gcc-10.3.0-openmpi-4.1.6:20241118
 ```
 
 1. To run the container interactively:
 ```
-podman run --rm -it registry-ex.sandia.gov/trilinos-project/trilinos-containers/rhel8/trilinos-pr-env:gcc-8.5.0
+podman run --rm -it registry-ex.sandia.gov/trilinos-project/trilinos-containers/experimental/ubi8-gcc-10.3.0-openmpi-4.1.6:20241118
 ```
 
 Once in the container, the environment is already set and it looks like a familiar module environment:
 
 ```
-root@trilinos-container-gcc-8:[/]: module list
+[root@aaecb38152fb /]# module list
 Currently Loaded Modulefiles:
- 1) gcc/8.5.0      6) cuda/11.8.0     11) netcdf-cxx/4.2        16) parallel-netcdf/1.12.3  21) superlu-dist/5.4.0  
- 2) boost/1.82.0   7) git/2.40.0      12) netcdf-fortran/4.6.0  17) parmetis/4.0.3          22) superlu/5.3.0       
- 3) ccache/4.8     8) hdf5/1.14.1-2   13) netlib-lapack/3.11.0  18) python/3.10.10          23) yaml-cpp/0.6.2      
- 4) cgns/4.3.0     9) metis/5.1.0     14) ninja/1.11.1          19) scotch/7.0.3            24) zlib/1.2.13         
- 5) cmake/3.26.3  10) netcdf-c/4.9.2  15) openmpi/4.1.5         20) suite-sparse/5.13.0     
-root@trilinos-container-gcc-8:[/]: echo $CC
-/spack-installs/gcc/8.5.0/gcc/8.5.0/base/k4bt6ni/bin/gcc
-root@trilinos-container-gcc-8:[/]: echo $CXX
-/spack-installs/gcc/8.5.0/gcc/8.5.0/base/k4bt6ni/bin/g++
-root@trilinos-container-gcc-8:[/]: echo $MPICC
-/spack-installs/openmpi/4.1.5/gcc/8.5.0/base/fil2rza/bin/mpicc
-root@trilinos-container-gcc-8:[/]: echo $MPICXX
-/spack-installs/openmpi/4.1.5/gcc/8.5.0/base/fil2rza/bin/mpic++
-root@trilinos-container-gcc-8:[/]: which cmake
-/spack-installs/cmake/3.26.3/gcc/8.5.0/base/l4oiivv/bin/cmake
-
+ 1) ccache/4.8.2                      9) mpc/1.3.1-gcc-8.5.0-jdpkpms   17) metis/5.1.0             25) binder/1.3.0
+ 2) valgrind/3.20.0                  10) gcc/10.3.0-gcc-8.5.0-ikdggsq  18) netcdf-c/4.9.2          26) py-mpi4py/3.1.4
+ 3) gdb/13.1                         11) openmpi/4.1.6                 19) parallel-netcdf/1.12.3  27) py-numpy/1.26.1
+ 4) zlib-ng/2.1.4-gcc-8.5.0-4mix3jq  12) cmake/3.27.7                  20) parmetis/4.0.3          28) py-pybind11/2.11.1
+ 5) zstd/1.5.5-gcc-8.5.0-4okppqr     13) ninja/1.11.1                  21) superlu/5.3.0           29) openblas/0.3.24
+ 6) binutils/2.41-gcc-8.5.0-xt4vsa7  14) boost/1.83.0                  22) superlu-dist/8.1.2      30) emacs/29.1
+ 7) gmp/6.2.1-gcc-8.5.0-w7wsbbi      15) cgns/4.4.0                    23) zlib/1.3                31) gh/2.32.1
+ 8) mpfr/4.2.0-gcc-8.5.0-3d45ev6     16) hdf5/1.14.3                   24) matio/1.5.17
+[root@aaecb38152fb /]# echo $CC
+/home/runner/spack/opt/spack/linux-rhel8-x86_64/gcc-8.5.0/gcc-10.3.0-ikdggsqaa6iwfrreixba5relam2bd7ki/bin/gcc
+[root@aaecb38152fb /]# echo $CXX
+/home/runner/spack/opt/spack/linux-rhel8-x86_64/gcc-8.5.0/gcc-10.3.0-ikdggsqaa6iwfrreixba5relam2bd7ki/bin/g++
+[root@aaecb38152fb /]# echo $MPICC
+/home/runner/spack/opt/spack/linux-rhel8-x86_64/gcc-10.3.0/openmpi-4.1.6-bbzeyro4q6y2lphvueezj6kg6cpmcbbc/bin/mpicc
+[root@aaecb38152fb /]# echo $MPICXX
+/home/runner/spack/opt/spack/linux-rhel8-x86_64/gcc-10.3.0/openmpi-4.1.6-bbzeyro4q6y2lphvueezj6kg6cpmcbbc/bin/mpic++
+[root@aaecb38152fb /]# which cmake
+/home/runner/spack/opt/spack/linux-rhel8-x86_64/gcc-10.3.0/cmake-3.27.7-zxyov77bfwd7e6r5ynkwypcwqljlymw6/bin/cmake
 ```
 
 # To build another image on top of this image: 
@@ -55,7 +54,7 @@ root@trilinos-container-gcc-8:[/]: which cmake
  Create a Dockerfile that uses it:
 
 ```
-from registry-ex.sandia.gov/trilinos-project/trilinos-containers/rhel8/trilinos-pr-env:gcc-8.5.0
+from registry-ex.sandia.gov/trilinos-project/trilinos-containers/experimental/ubi8-gcc-10.3.0-openmpi-4.1.6:20241118
 
 RUN <whatever commands you want>
 ```
