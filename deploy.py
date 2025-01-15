@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-import os
-import subprocess
-import shutil
-
 import argparse
+import os
+import shutil
+import subprocess
 
+import gitlab
 
 REGISTRY = "registry-ex.sandia.gov/trilinos-project/trilinos-containers"
 
@@ -40,6 +40,23 @@ DEPLOYS = [
     "image_name": "ubi8-intel-intelmpi"}
 ]
 
+def list_container_images(gitlab_url="https://gitlab-ex.sandia.gov", project_id=3512):
+    """
+    List container images in a private GitLab repository.
+
+    Args:
+    gitlab_url (str): The URL of your GitLab instance.
+    project_id (int): The ID of your project.
+
+    Returns:
+    list: A list of container image locations for all tags.
+    """
+    gl = gitlab.Gitlab(gitlab_url)
+    project = gl.projects.get(project_id)
+    repos = project.repositories.list()
+    image_list = [tag.location for repo in repos for tag in repo.tags.list()]
+
+    return image_list
 
 parser = argparse.ArgumentParser()
 parser.add_argument("IMAGES", nargs="*")
@@ -66,6 +83,9 @@ for image in deploys:
     dockerfile_ts = subprocess.check_output(["git", "--no-pager", "log", "-1", "--format=%cd", f"--date=format:{date_format}", "--", path]).decode().strip()
     build_args = [k + "=" + v for k, v in image["build_args"].items()]
     tag = REGISTRY + ("/production/" if image["production"] else "/experimental/") + image["image_name"] + ":" + dockerfile_ts
+    if tag in list_container_images():
+        print(f"tag {tag} already exists in container registry, skipping build")
+        continue
     build_args.append(f"AT2_image_fullpath={tag}")
     build_args.append(f"AT2_image={image['image_name']}")
     print(f"Building Dockerfile '{dockerfile}' with args {build_args}")
