@@ -14,7 +14,7 @@ RUN rm -rf /etc/rhsm-host
 RUN yum -y --setopt=tsflags=nodocs update && yum clean all
 
 RUN yum -y install gcc gcc-c++ xz bzip2 patch diffutils file make git python38 procps libX11-devel
-RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout develop-2024-10-13
+RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout develop-2025-01-12
 RUN echo -e "export SPACK_ROOT=/spack\nsource /spack/share/spack/setup-env.sh\n" > /etc/profile.d/spack.sh
 RUN bash -l -c "spack config add config:build_jobs:64"
 
