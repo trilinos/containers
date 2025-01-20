@@ -14,7 +14,7 @@ RUN rm -rf /etc/rhsm-host
 RUN yum -y --setopt=tsflags=nodocs update && yum clean all
 
 RUN yum -y install gcc gcc-c++ xz bzip2 patch diffutils file make git python38 procps libX11-devel
-RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout develop-2025-01-12
+RUN git clone https://github.com/spack/spack.git /spack && cd /spack && git checkout develop-2025-01-12
 RUN echo -e "export SPACK_ROOT=/spack\nsource /spack/share/spack/setup-env.sh\n" > /etc/profile.d/spack.sh
 RUN bash -l -c "spack config add config:build_jobs:64"
 
@@ -63,12 +63,12 @@ spack:\n\
 RUN echo -e "spack env activate /root\n" >> /etc/profile.d/spack.sh
 
 RUN bash -l -c "spack concretize"
-RUN bash -l -c "cd /home/runner && spack env depfile -o Makefile"
+RUN bash -l -c "cd /root && spack env depfile -o Makefile"
 # Just in case a mirror fails to pull, retry the spack install so that we can preserve
 # all of the packages that did build successfully
-RUN bash -l -c "cd /home/runner && make -j6 || true"
-RUN bash -l -c "cd /home/runner && make -j6"
-RUN rm /home/runner/Makefile
+RUN bash -l -c "cd /root && make -j6 || true"
+RUN bash -l -c "cd /root && make -j6"
+RUN rm /root/Makefile
 
 CMD [ "/bin/bash" ]
 
