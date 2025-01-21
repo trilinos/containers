@@ -1,12 +1,5 @@
 FROM registry.access.redhat.com/ubi8:latest
 
-# Image basename (useful for describing image characteristics, e.g. toolchain)
-ARG AT2_image
-ENV AT2_IMAGE=${AT2_image}
-# Image path as pushed (useful for referencing where to pull the image)
-ARG AT2_image_fullpath
-ENV AT2_IMAGE_FULLPATH=${AT2_image_fullpath}
-
 # Disable all host repositories so that we're only using things from UBI
 # (in the event that you're building a UBI container on a RHEL host, RedHat
 # tries to 'help' and let you use your subscription inside the container)
@@ -154,6 +147,13 @@ RUN rm /home/runner/Makefile
 
 CMD [ "/bin/bash" ]
 
+# Image basename (useful for describing image characteristics, e.g. toolchain)
+ARG AT2_image
+ENV AT2_IMAGE=${AT2_image}
+# Image path as pushed (useful for referencing where to pull the image)
+ARG AT2_image_fullpath
+ENV AT2_IMAGE_FULLPATH=${AT2_image_fullpath}
+
 RUN bash -l -c "spack module tcl refresh -y %gcc${compiler_version}"
 RUN echo -e "\
 module load ccache\n\
@@ -192,7 +192,4 @@ else\n\
 fi">> /home/runner/.bashrc
 
 USER root
-ADD GenConfig /GenConfig
-RUN chmod -R ugo+rwX /GenConfig
-
 RUN echo -e "source /home/runner/.bashrc" >> /root/.bashrc

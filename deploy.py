@@ -94,11 +94,6 @@ for image in deploys:
     for e in build_args:
         f.append("--build-arg")
         f.append(e)
-    if os.path.exists(os.path.join(dockerfile, "GenConfig")):
-        shutil.rmtree(os.path.join(dockerfile, "GenConfig"))
-    if not os.path.exists(os.path.join(repo_root, "GenConfig", "ini_files")):
-        raise SystemExit("The GenConfig dependency does not appear to exist!  Did you initialize git submodules?")
-    shutil.copytree(os.path.join(repo_root, "GenConfig"), os.path.join(dockerfile, "GenConfig"), symlinks=True)
     try:
         subprocess.check_call(["podman", "build", "--tag", tag] + f + [dockerfile])
     except subprocess.CalledProcessError as e:
