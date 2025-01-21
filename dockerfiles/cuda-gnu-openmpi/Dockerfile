@@ -66,7 +66,7 @@ spack:\n\
     - parallel-netcdf\n\
     - parmetis\n\
     - superlu-dist\n\
-    - superlu\n\
+    - superlu@5\n\
     - zlib\n\
     - openmpi${mpi_version}+cuda\n\
     - matio\n\

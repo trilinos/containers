@@ -53,7 +53,7 @@ spack:\n\
     - hdf5 +hl~mpi\n\
     - metis\n\
     - netcdf-c\n\
-    - superlu\n\
+    - superlu@5\n\
     - zlib\n\
     - matio\n\
     - python\n\
