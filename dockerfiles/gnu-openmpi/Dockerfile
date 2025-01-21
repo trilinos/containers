@@ -1,12 +1,5 @@
 FROM registry.access.redhat.com/ubi8:latest
 
-# Image basename (useful for describing image characteristics, e.g. toolchain)
-ARG AT2_image
-ENV AT2_IMAGE=${AT2_image}
-# Image path as pushed (useful for referencing where to pull the image)
-ARG AT2_image_fullpath
-ENV AT2_IMAGE_FULLPATH=${AT2_image_fullpath}
-
 # Disable all host repositories so that we're only using things from UBI
 # (in the event that you're building a UBI container on a RHEL host, RedHat
 # tries to 'help' and let you use your subscription inside the container)
@@ -163,6 +156,13 @@ ENV OMPI_ALLOW_RUN_AS_ROOT=1
 ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
 CMD [ "/bin/bash" ]
+
+# Image basename (useful for describing image characteristics, e.g. toolchain)
+ARG AT2_image
+ENV AT2_IMAGE=${AT2_image}
+# Image path as pushed (useful for referencing where to pull the image)
+ARG AT2_image_fullpath
+ENV AT2_IMAGE_FULLPATH=${AT2_image_fullpath}
 
 RUN bash -l -c "spack module tcl refresh -y %gcc${compiler_version}"
 RUN echo -e "\
