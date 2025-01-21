@@ -207,7 +207,4 @@ else\n\
 fi">> /home/runner/.bashrc
 
 USER root
-ADD GenConfig /GenConfig
-RUN chmod -R ugo+rwX /GenConfig
-
 RUN echo -e "source /home/runner/.bashrc" >> /root/.bashrc
