@@ -10,35 +10,50 @@ import gitlab
 REGISTRY = "registry-ex.sandia.gov/trilinos-project/trilinos-containers"
 
 DEPLOYS = [
-    {"dockerfile": "gnu-openmpi",
-    "build_args": {"compiler_version": "@12.1.0", "mpi_version": "@4.1.6"},
-    "production": False,
-    "image_name": "ubi8-gcc-12.1.0-openmpi-4.1.6"},
-    {"dockerfile": "gnu-openmpi",
-    "build_args": {"compiler_version": "@10.3.0", "mpi_version": "@4.1.6"},
-    "production": False,
-    "image_name": "ubi8-gcc-10.3.0-openmpi-4.1.6"},
-    {"dockerfile": "cuda-gnu-openmpi",
-    "build_args": {"compiler_version": "@10.3.0", "mpi_version": "@4.1.6", "cuda_version": "@11.4.2"},
-    "production": False,
-    "image_name": "ubi8-cuda-11.4.2-gcc-10.3.0-openmpi-4.1.6"},
-    {"dockerfile": "cuda-gnu-openmpi",
-    "build_args": {"compiler_version": "@10.3.0", "mpi_version": "@4.1.6", "cuda_version": "@12.4.1"},
-    "production": False,
-    "image_name": "ubi8-cuda-12.4.1-gcc-10.3.0-openmpi-4.1.6"},
-    {"dockerfile": "gnu-serial",
-    "build_args": {"compiler_version": "@8.3.0"},
-    "production": False,
-    "image_name": "ubi8-gcc-8.3.0-serial"},
-    {"dockerfile": "python",
-    "build_args": {},
-    "production": False,
-    "image_name": "ubi8-python-3.9"},
-    {"dockerfile": "intel-intelmpi",
-    "build_args": {},
-    "production": True,
-    "image_name": "ubi8-intel-intelmpi"}
+    {
+        "dockerfile": "gnu-openmpi",
+        "build_args": {"compiler_version": "@12.1.0", "mpi_version": "@4.1.6"},
+        "production": False,
+        "image_name": "ubi8-gcc-12.1.0-openmpi-4.1.6",
+    },
+    {
+        "dockerfile": "gnu-openmpi",
+        "build_args": {"compiler_version": "@10.3.0", "mpi_version": "@4.1.6"},
+        "production": False,
+        "image_name": "ubi8-gcc-10.3.0-openmpi-4.1.6",
+    },
+    {
+        "dockerfile": "cuda-gnu-openmpi",
+        "build_args": {"compiler_version": "@10.3.0", "mpi_version": "@4.1.6", "cuda_version": "@11.4.2"},
+        "production": False,
+        "image_name": "ubi8-cuda-11.4.2-gcc-10.3.0-openmpi-4.1.6",
+    },
+    {
+        "dockerfile": "cuda-gnu-openmpi",
+        "build_args": {"compiler_version": "@10.3.0", "mpi_version": "@4.1.6", "cuda_version": "@12.4.1"},
+        "production": False,
+        "image_name": "ubi8-cuda-12.4.1-gcc-10.3.0-openmpi-4.1.6",
+    },
+    {
+        "dockerfile": "gnu-serial",
+        "build_args": {"compiler_version": "@8.3.0"},
+        "production": False,
+        "image_name": "ubi8-gcc-8.3.0-serial",
+    },
+    {
+        "dockerfile": "python",
+        "build_args": {},
+        "production": False,
+        "image_name": "ubi8-python-3.9",
+    },
+    {
+        "dockerfile": "intel-intelmpi",
+        "build_args": {},
+        "production": True,
+        "image_name": "ubi8-intel-intelmpi",
+    },
 ]
+
 
 def list_container_images(gitlab_url="https://gitlab-ex.sandia.gov", project_id=3512):
     """
@@ -58,6 +73,7 @@ def list_container_images(gitlab_url="https://gitlab-ex.sandia.gov", project_id=
 
     return image_list
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("IMAGES", nargs="*")
 parser.add_argument("--skip-login", action="store_true", help="Skip registry login")
@@ -66,7 +82,17 @@ args = parser.parse_args()
 repo_root = os.path.abspath(os.path.dirname(__file__))
 
 if not args.skip_login:
-    subprocess.check_call(['docker', 'login', '-u', 'gitlab+deploy-token-23', '-p', os.environ['AT2_BUILD_TOKEN'], 'registry-ex.sandia.gov'])
+    subprocess.check_call(
+        [
+            "docker",
+            "login",
+            "-u",
+            "gitlab+deploy-token-23",
+            "-p",
+            os.environ["AT2_BUILD_TOKEN"],
+            "registry-ex.sandia.gov",
+        ]
+    )
 
 date_format = "%Y%m%d"
 os.chdir(repo_root)
@@ -79,10 +105,31 @@ else:
 for image in deploys:
     dockerfile = os.path.join(repo_root, "dockerfiles", image["dockerfile"])
     path = dockerfile + "/Dockerfile"
-    # get the timestamp from the Dockerfile commit
-    dockerfile_ts = subprocess.check_output(["git", "--no-pager", "log", "-1", "--format=%cd", f"--date=format:{date_format}", "--", path]).decode().strip()
+    # get the timestamp from the Dockerfile commit (YYYYMMDD)
+    dockerfile_ts = (
+        subprocess.check_output(
+            [
+                "git",
+                "--no-pager",
+                "log",
+                "-1",
+                "--format=%cd",
+                f"--date=format:{date_format}",
+                "--",
+                path,
+            ]
+        )
+        .decode()
+        .strip()
+    )
     build_args = [k + "=" + v for k, v in image["build_args"].items()]
-    tag = REGISTRY + ("/production/" if image["production"] else "/experimental/") + image["image_name"] + ":" + dockerfile_ts
+    tag = (
+        REGISTRY
+        + ("/production/" if image["production"] else "/experimental/")
+        + image["image_name"]
+        + ":"
+        + dockerfile_ts
+    )
     if tag in list_container_images():
         print(f"tag {tag} already exists in container registry, skipping build")
         continue
@@ -100,5 +147,7 @@ for image in deploys:
         print(f"check_call() returned {e.returncode}")
         continue
     subprocess.check_call(["podman", "push", tag])
-    latest_tag = REGISTRY + ("/production/" if image["production"] else "/experimental/") + image["image_name"] + ":latest"
+    latest_tag = (
+        REGISTRY + ("/production/" if image["production"] else "/experimental/") + image["image_name"] + ":latest"
+    )
     subprocess.check_call(["podman", "push", tag, latest_tag])
