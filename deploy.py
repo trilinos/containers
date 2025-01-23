@@ -11,46 +11,46 @@ REGISTRY = "registry-ex.sandia.gov/trilinos-project/trilinos-containers"
 
 DEPLOYS = [
     {
+        "image_name": "ubi8-gcc-12.1.0-openmpi-4.1.6",
         "dockerfile": "gnu-openmpi",
         "build_args": {"compiler_version": "@12.1.0", "mpi_version": "@4.1.6"},
         "production": False,
-        "image_name": "ubi8-gcc-12.1.0-openmpi-4.1.6",
     },
     {
+        "image_name": "ubi8-gcc-10.3.0-openmpi-4.1.6",
         "dockerfile": "gnu-openmpi",
         "build_args": {"compiler_version": "@10.3.0", "mpi_version": "@4.1.6"},
-        "production": False,
-        "image_name": "ubi8-gcc-10.3.0-openmpi-4.1.6",
+        "production": True,
     },
     {
+        "image_name": "ubi8-cuda-11.4.2-gcc-10.3.0-openmpi-4.1.6",
         "dockerfile": "cuda-gnu-openmpi",
         "build_args": {"compiler_version": "@10.3.0", "mpi_version": "@4.1.6", "cuda_version": "@11.4.2"},
-        "production": False,
-        "image_name": "ubi8-cuda-11.4.2-gcc-10.3.0-openmpi-4.1.6",
+        "production": True,
     },
     {
+        "image_name": "ubi8-cuda-12.4.1-gcc-10.3.0-openmpi-4.1.6",
         "dockerfile": "cuda-gnu-openmpi",
         "build_args": {"compiler_version": "@10.3.0", "mpi_version": "@4.1.6", "cuda_version": "@12.4.1"},
         "production": False,
-        "image_name": "ubi8-cuda-12.4.1-gcc-10.3.0-openmpi-4.1.6",
     },
     {
+        "image_name": "ubi8-gcc-8.3.0-serial",
         "dockerfile": "gnu-serial",
         "build_args": {"compiler_version": "@8.3.0"},
-        "production": False,
-        "image_name": "ubi8-gcc-8.3.0-serial",
+        "production": True,
     },
     {
+        "image_name": "ubi8-python-3.9",
         "dockerfile": "python",
         "build_args": {},
-        "production": False,
-        "image_name": "ubi8-python-3.9",
+        "production": True,
     },
     {
+        "image_name": "ubi8-intel-intelmpi",
         "dockerfile": "intel-intelmpi",
         "build_args": {},
         "production": True,
-        "image_name": "ubi8-intel-intelmpi",
     },
 ]
 
