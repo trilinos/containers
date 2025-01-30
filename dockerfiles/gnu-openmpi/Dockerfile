@@ -1,9 +1,3 @@
-# Default build argument values.
-# These must be redeclared after the FROM to allow for passed
-# build-args to override the default values.
-ARG compiler_version=
-ARG mpi_version=
-
 FROM registry.access.redhat.com/ubi8:latest
 
 # Disable all host repositories so that we're only using things from UBI
@@ -25,13 +19,13 @@ RUN echo -e "export SPACK_ROOT=/home/runner/spack\nsource /home/runner/spack/sha
 RUN bash -l -c "spack config add config:build_jobs:64"
 RUN bash -l -c "spack bootstrap now"
 
-ARG compiler_version
+ARG compiler_version=
 
 RUN bash -l -c "spack compiler find"
 RUN bash -l -c "spack -C /home/runner install gcc${compiler_version} target=x86_64 > /dev/null & spack -C /home/runner install gcc${compiler_version} target=x86_64 || true"
 RUN bash -l -c "spack -C /home/runner install gcc${compiler_version} target=x86_64 > /dev/null & spack -C /home/runner install gcc${compiler_version} target=x86_64"
 
-ARG mpi_version
+ARG mpi_version=
 
 RUN mkdir /home/runner/environment
 # Consider using here-documents once we get to Buildah 1.33.0+
