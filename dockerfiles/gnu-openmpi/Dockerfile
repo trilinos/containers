@@ -207,13 +207,14 @@ else\n\
 fi">> /home/runner/.bashrc
 
 # Setup artifact Dockerfile in image
-RUN mkdir /home/runner/artifacts
-COPY Dockerfile /home/runner/artifacts/Dockerfile
+ENV AT2_ARTIFACTS_DIR=/home/runner/artifacts
+RUN mkdir $AT2_ARTIFACTS_DIR
+COPY Dockerfile ${AT2_ARTIFACTS_DIR}/Dockerfile
 # Set artifact Dockerfile default arguments as the used build-arguments
-RUN sed -i "s/^\(ARG AT2_image=\).*/\1${AT2_image}/" /home/runner/artifacts/Dockerfile
-RUN sed -i "s|^\(ARG AT2_image_fullpath=\).*|\1${AT2_image_fullpath}|" /home/runner/artifacts/Dockerfile
-RUN sed -i "s/^\(ARG compiler_version=\).*/\1${compiler_version}/" /home/runner/artifacts/Dockerfile
-RUN sed -i "s/^\(ARG mpi_version=\).*/\1${mpi_version}/" /home/runner/artifacts/Dockerfile
+RUN sed -i "s/^\(ARG AT2_image=\).*/\1${AT2_image}/" ${AT2_ARTIFACTS_DIR}/Dockerfile
+RUN sed -i "s|^\(ARG AT2_image_fullpath=\).*|\1${AT2_image_fullpath}|" ${AT2_ARTIFACTS_DIR}/Dockerfile
+RUN sed -i "s/^\(ARG compiler_version=\).*/\1${compiler_version}/" ${AT2_ARTIFACTS_DIR}/Dockerfile
+RUN sed -i "s/^\(ARG mpi_version=\).*/\1${mpi_version}/" ${AT2_ARTIFACTS_DIR}/Dockerfile
 
 USER root
 RUN echo -e "source /home/runner/.bashrc" >> /root/.bashrc
