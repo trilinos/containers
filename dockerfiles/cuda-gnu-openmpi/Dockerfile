@@ -158,10 +158,10 @@ ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 CMD [ "/bin/bash" ]
 
 # Image basename (useful for describing image characteristics, e.g. toolchain)
-ARG AT2_image
+ARG AT2_image=
 ENV AT2_IMAGE=${AT2_image}
 # Image path as pushed (useful for referencing where to pull the image)
-ARG AT2_image_fullpath
+ARG AT2_image_fullpath=
 ENV AT2_IMAGE_FULLPATH=${AT2_image_fullpath}
 
 RUN bash -l -c "spack module tcl refresh -y %gcc${compiler_version}"
@@ -206,6 +206,16 @@ else\n\
   export CCACHE_DIR=$HOME/ccache-dir\n\
   mkdir -p \$CCACHE_DIR\n\
 fi" >> /home/runner/.bashrc
+
+# Setup artifact Dockerfile in image
+RUN mkdir /home/runner/artifacts
+COPY Dockerfile /home/runner/artifacts/Dockerfile
+# Set artifact Dockerfile default arguments as the used build-arguments
+RUN sed -i "s/^\(ARG AT2_image=\).*/\1${AT2_image}/" /home/runner/artifacts/Dockerfile
+RUN sed -i "s|^\(ARG AT2_image_fullpath=\).*|\1${AT2_image_fullpath}|" /home/runner/artifacts/Dockerfile
+RUN sed -i "s/^\(ARG compiler_version=\).*/\1${compiler_version}/" /home/runner/artifacts/Dockerfile
+RUN sed -i "s/^\(ARG mpi_version=\).*/\1${mpi_version}/" /home/runner/artifacts/Dockerfile
+RUN sed -i "s/^\(ARG cuda_version=\).*/\1${cuda_version}/" /home/runner/artifacts/Dockerfile
 
 USER root
 RUN echo -e "source /home/runner/.bashrc" >> /root/.bashrc
