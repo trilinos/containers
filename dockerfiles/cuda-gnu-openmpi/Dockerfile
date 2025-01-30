@@ -1,3 +1,10 @@
+# Default build argument values.
+# These must be redeclared after the FROM to allow for passed
+# build-args to override the default values.
+ARG compiler_version=
+ARG mpi_version=
+ARG cuda_version=
+
 FROM registry.access.redhat.com/ubi8:latest
 
 # Disable all host repositories so that we're only using things from UBI
@@ -19,7 +26,7 @@ RUN echo -e "export SPACK_ROOT=/home/runner/spack\nsource /home/runner/spack/sha
 RUN bash -l -c "spack config add config:build_jobs:64"
 RUN bash -l -c "spack bootstrap now"
 
-ARG compiler_version=
+ARG compiler_version
 
 RUN bash -l -c "spack compiler find"
 RUN bash -l -c "spack -C /home/runner install gcc${compiler_version} target=x86_64 > /dev/null & spack -C /home/runner install gcc${compiler_version} target=x86_64 || true"
@@ -31,8 +38,8 @@ RUN bash -l -c "spack bootstrap now"
 RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64\" >> /home/runner/.bashrc"
 RUN bash -l -c "module load gcc && spack compiler find"
 
-ARG mpi_version=
-ARG cuda_version=
+ARG mpi_version
+ARG cuda_version
 
 RUN mkdir /home/runner/environment
 # Consider using here-documents once we get to Buildah 1.33.0+
@@ -158,10 +165,10 @@ ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 CMD [ "/bin/bash" ]
 
 # Image basename (useful for describing image characteristics, e.g. toolchain)
-ARG AT2_image
+ARG AT2_image=
 ENV AT2_IMAGE=${AT2_image}
 # Image path as pushed (useful for referencing where to pull the image)
-ARG AT2_image_fullpath
+ARG AT2_image_fullpath=
 ENV AT2_IMAGE_FULLPATH=${AT2_image_fullpath}
 
 RUN bash -l -c "spack module tcl refresh -y %gcc${compiler_version}"
@@ -206,6 +213,16 @@ else\n\
   export CCACHE_DIR=$HOME/ccache-dir\n\
   mkdir -p \$CCACHE_DIR\n\
 fi" >> /home/runner/.bashrc
+
+# Setup artifact Dockerfile in image
+RUN mkdir /home/runner/artifacts
+COPY Dockerfile /home/runner/artifacts/Dockerfile
+# Set artifact Dockerfile default arguments as the used build-arguments
+RUN sed -i "s/^\(ARG AT2_image=\).*/\1${AT2_image}/" /home/runner/artifacts/Dockerfile
+RUN sed -i "s|^\(ARG AT2_image_fullpath=\).*|\1${AT2_image_fullpath}|" /home/runner/artifacts/Dockerfile
+RUN sed -i "s/^\(ARG compiler_version=\).*/\1${compiler_version}/" /home/runner/artifacts/Dockerfile
+RUN sed -i "s/^\(ARG mpi_version=\).*/\1${mpi_version}/" /home/runner/artifacts/Dockerfile
+RUN sed -i "s/^\(ARG cuda_version=\).*/\1${cuda_version}/" /home/runner/artifacts/Dockerfile
 
 USER root
 RUN echo -e "source /home/runner/.bashrc" >> /root/.bashrc

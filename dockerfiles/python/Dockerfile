@@ -127,16 +127,13 @@ RUN bash -l -c "cd /home/runner && make -j6 || true"
 RUN bash -l -c "cd /home/runner && make -j6"
 RUN rm /home/runner/Makefile
 
-# ENV OMPI_ALLOW_RUN_AS_ROOT=1
-# ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
-
 CMD [ "/bin/bash" ]
 
 # Image basename (useful for describing image characteristics, e.g. toolchain)
-ARG AT2_image
+ARG AT2_image=
 ENV AT2_IMAGE=${AT2_image}
 # Image path as pushed (useful for referencing where to pull the image)
-ARG AT2_image_fullpath
+ARG AT2_image_fullpath=
 ENV AT2_IMAGE_FULLPATH=${AT2_image_fullpath}
 
 RUN bash -l -c "spack module tcl refresh -y"
@@ -148,6 +145,9 @@ module load emacs\n\
 module load py-pytest-cov\n\
 module load gh\n\
 ">> /home/runner/.bashrc
+
+RUN sed -i "s/^\(ARG AT2_image=\).*/\1${AT2_image}/" /home/runner/artifacts/Dockerfile
+RUN sed -i "s|^\(ARG AT2_image_fullpath=\).*|\1${AT2_image_fullpath}|" /home/runner/artifacts/Dockerfile
 
 USER root
 RUN echo -e "source /home/runner/.bashrc" >> /root/.bashrc
