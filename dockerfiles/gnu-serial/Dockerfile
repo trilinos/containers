@@ -191,13 +191,14 @@ else\n\
   mkdir -p \$CCACHE_DIR\n\
 fi">> /home/runner/.bashrc
 
-# Setup Dockerfile in built image
-RUN mkdir /home/runner/artifacts
-COPY Dockerfile /home/runner/artifacts/Dockerfile
-# Set Dockerfile default arguments as the used build-arguments
-RUN sed -i "s/^\(ARG AT2_image=\).*/\1${AT2_image}/" /home/runner/artifacts/Dockerfile
-RUN sed -i "s|^\(ARG AT2_image_fullpath=\).*|\1${AT2_image_fullpath}|" /home/runner/artifacts/Dockerfile
-RUN sed -i "s/^\(ARG compiler_version=\).*/\1${compiler_version}/" /home/runner/artifacts/Dockerfile
+# Setup artifact Dockerfile in image
+ENV AT2_ARTIFACTS_DIR=/home/runner/artifacts
+RUN mkdir $AT2_ARTIFACTS_DIR
+COPY Dockerfile ${AT2_ARTIFACTS_DIR}/Dockerfile
+# Set artifact Dockerfile default arguments as the used build-arguments
+RUN sed -i "s/^\(ARG AT2_image=\).*/\1${AT2_image}/" ${AT2_ARTIFACTS_DIR}/Dockerfile
+RUN sed -i "s|^\(ARG AT2_image_fullpath=\).*|\1${AT2_image_fullpath}|" ${AT2_ARTIFACTS_DIR}/Dockerfile
+RUN sed -i "s/^\(ARG compiler_version=\).*/\1${compiler_version}/" ${AT2_ARTIFACTS_DIR}/Dockerfile
 
 USER root
 RUN echo -e "source /home/runner/.bashrc" >> /root/.bashrc
