@@ -69,7 +69,7 @@ def list_container_images(gitlab_url="https://gitlab-ex.sandia.gov", project_id=
     gl = gitlab.Gitlab(gitlab_url)
     project = gl.projects.get(project_id)
     repos = project.repositories.list()
-    image_list = [tag.location for repo in repos for tag in repo.tags.list()]
+    image_list = [tag.location for repo in repos for tag in repo.tags.list(iterator=True)]
 
     return image_list
 
