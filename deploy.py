@@ -2,10 +2,7 @@
 
 import argparse
 import os
-import shutil
 import subprocess
-
-import gitlab
 
 REGISTRY = "registry-ex.sandia.gov/trilinos-project/trilinos-containers"
 
@@ -72,6 +69,12 @@ def list_container_images(gitlab_url="https://gitlab-ex.sandia.gov", project_id=
     Returns:
     list: A list of container image locations for all tags.
     """
+    # If we're not logging in just return an empty list
+    if args.skip_login:
+        return []
+
+    import gitlab
+
     gl = gitlab.Gitlab(gitlab_url)
     project = gl.projects.get(project_id)
     repos = project.repositories.list()
@@ -152,8 +155,9 @@ for image in deploys:
     except subprocess.CalledProcessError as e:
         print(f"check_call() returned {e.returncode}")
         continue
-    subprocess.check_call(["podman", "push", tag])
-    latest_tag = (
-        REGISTRY + ("/production/" if image["production"] else "/experimental/") + image["image_name"] + ":latest"
-    )
-    subprocess.check_call(["podman", "push", tag, latest_tag])
+    if not args.skip_login:
+        subprocess.check_call(["podman", "push", tag])
+        latest_tag = (
+            REGISTRY + ("/production/" if image["production"] else "/experimental/") + image["image_name"] + ":latest"
+        )
+        subprocess.check_call(["podman", "push", tag, latest_tag])
