@@ -6,7 +6,7 @@ FROM registry.access.redhat.com/ubi9:latest
 RUN rm -rf /etc/rhsm-host
 RUN yum -y --setopt=tsflags=nodocs update && yum clean all
 
-RUN yum -y install gcc gcc-c++ gcc-gfortran xz bzip2 patch diffutils file make git python procps environment-modules gettext unzip libX11-devel
+RUN yum -y install gcc gcc-c++ gcc-gfortran xz bzip2 patch diffutils file make git python python3-pip procps environment-modules gettext unzip libX11-devel
 
 RUN useradd runner
 USER runner
@@ -38,6 +38,8 @@ spack:\n\
       - '%clang${compiler_version}'\n\
       target: [x86_64]\n\
   specs:\n\
+  - ccache\n\
+  - valgrind\n\
   - cmake\n\
   - ninja\n\
   - boost +program_options+system\n\
@@ -54,6 +56,8 @@ spack:\n\
   - matio\n\
   - openblas\n\
   - fmt\n\
+  - emacs\n\
+  - gh\n\
   concretizer:\n\
     unify: when_possible\n\
   view: false\n" > /home/runner/environment/spack.yaml
@@ -150,7 +154,6 @@ RUN bash -l -c "spack module tcl refresh -y %llvm+clang+lld${compiler_version}"
 RUN echo -e "\
 module load ccache\n\
 module load valgrind\n\
-module load gdb\n\
 module load llvm\n\
 module load openmpi\n\
 module load cmake\n\
@@ -166,11 +169,6 @@ module load superlu\n\
 module load superlu-dist\n\
 module load zlib\n\
 module load matio\n\
-module load python\n\
-module load binder\n\
-module load py-mpi4py\n\
-module load py-numpy\n\
-module load py-pybind11\n\
 module load openblas\n\
 module load emacs\n\
 module load gh\n\
