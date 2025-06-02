@@ -47,7 +47,7 @@ spack:\n\
   - netcdf-c +parallel-netcdf\n\
   - parallel-netcdf\n\
   - parmetis\n\
-  - superlu-dist\n\
+  - superlu-dist@5.4.0\n\
   - superlu@5\n\
   - zlib\n\
   - openmpi${mpi_version}\n\
