@@ -6,7 +6,7 @@ FROM registry.access.redhat.com/ubi9:latest
 RUN rm -rf /etc/rhsm-host
 RUN yum -y --setopt=tsflags=nodocs update && yum clean all
 
-RUN yum -y install gcc gcc-c++ gcc-gfortran xz bzip2 patch diffutils file make git python python3-pip procps environment-modules gettext unzip libX11-devel
+RUN yum -y install gcc gcc-c++ gcc-gfortran xz bzip2 patch diffutils file make git python python3-pip perl-File-Copy perl-File-Compare perl-Sys-Hostname procps environment-modules gettext unzip libX11-devel
 
 RUN useradd runner
 USER runner
