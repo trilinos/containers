@@ -17,15 +17,15 @@ DEPLOYS = [
         "production": False,
     },
     {
-        "image_name": "ubi8-gcc-10.3.0-openmpi-4.1.6",
+        "image_name": "ubi8-gcc-10.4.0-openmpi-4.1.6",
         "dockerfile": "gnu-openmpi",
-        "build_args": {"compiler_version": "@10.3.0", "mpi_version": "@4.1.6"},
+        "build_args": {"compiler_version": "@10.4.0", "mpi_version": "@4.1.6"},
         "production": True,
     },
     {
-        "image_name": "ubi8-cuda-11.4.2-gcc-10.3.0-openmpi-4.1.6",
+        "image_name": "ubi8-cuda-11.4.2-gcc-10.4.0-openmpi-4.1.6",
         "dockerfile": "cuda-gnu-openmpi",
-        "build_args": {"compiler_version": "@10.3.0", "mpi_version": "@4.1.6", "cuda_version": "@11.4.2"},
+        "build_args": {"compiler_version": "@10.4.0", "mpi_version": "@4.1.6", "cuda_version": "@11.4.2"},
         "production": True,
     },
     {
