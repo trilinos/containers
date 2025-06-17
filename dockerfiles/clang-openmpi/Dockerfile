@@ -14,7 +14,6 @@ USER runner
 RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout develop-2025-01-12
 RUN echo -e "export SPACK_ROOT=/home/runner/spack\nsource /home/runner/spack/share/spack/setup-env.sh\n" >> /home/runner/.bashrc
 RUN bash -l -c "spack config add config:build_jobs:64"
-#RUN bash -l -c "spack mirror add --unsigned --type=binary gitlab-ex oci://registry-ex.sandia.gov/trilinos-project/trilinos-containers/buildcache"
 RUN bash -l -c "spack bootstrap now"
 
 ARG compiler_version=
