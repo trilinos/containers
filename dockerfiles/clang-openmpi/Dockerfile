@@ -1,14 +1,35 @@
-FROM registry.access.redhat.com/ubi9:latest
+FROM mambaorg/micromamba:debian12
 
-# Disable all host repositories so that we're only using things from UBI
-# (in the event that you're building a UBI container on a RHEL host, RedHat
-# tries to 'help' and let you use your subscription inside the container)
-RUN rm -rf /etc/rhsm-host
-RUN yum -y --setopt=tsflags=nodocs update && yum clean all
+# Switch to root to install packages
+USER root
 
-RUN yum -y install gcc gcc-c++ gcc-gfortran xz bzip2 patch diffutils file make git python python3-pip perl-File-Copy perl-File-Compare perl-Sys-Hostname procps environment-modules gettext unzip libX11-devel
+# Update package lists and install required packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    gfortran \
+    xz-utils \
+    bzip2 \
+    patch \
+    diffutils \
+    file \
+    make \
+    git \
+    python3 \
+    python3-pip \
+    libfile-copy-perl \
+    libfile-compare-perl \
+    libsys-hostname-long-perl \
+    procps \
+    environment-modules \
+    gettext \
+    unzip \
+    libx11-dev \
+    sudo \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN useradd runner
+RUN useradd -m runner && usermod -aG sudo runner
 USER runner
 
 RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout develop-2025-01-12
