@@ -34,15 +34,20 @@ RUN useradd -m runner && usermod -aG sudo runner
 USER runner
 
 RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout develop-2025-01-12
+
+# Set up Spack environment variables
+ENV SPACK_ROOT=/home/runner/spack
+ENV PATH=$SPACK_ROOT/bin:$PATH
+
 RUN echo -e "export SPACK_ROOT=/home/runner/spack\nsource /home/runner/spack/share/spack/setup-env.sh\n" >> /home/runner/.bashrc
-RUN bash -l -c "source /home/runner/.bashrc && spack config add config:build_jobs:64"
-RUN bash -l -c "source /home/runner/.bashrc && spack bootstrap now"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack config add config:build_jobs:64"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack bootstrap now"
 
 ARG compiler_version=
 
-RUN bash -l -c "source /home/runner/.bashrc && spack compiler find"
-RUN bash -l -c "source /home/runner/.bashrc && spack -C /home/runner install llvm+clang+lld${compiler_version} target=x86_64 > /dev/null & spack -C /home/runner install llvm+clang+lld${compiler_version} target=x86_64 || true"
-RUN bash -l -c "source /home/runner/.bashrc && spack -C /home/runner install llvm+clang+lld${compiler_version} target=x86_64 > /dev/null & spack -C /home/runner install llvm+clang+lld${compiler_version} target=x86_64"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack compiler find"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack -C /home/runner install llvm+clang+lld${compiler_version} target=x86_64 > /dev/null & spack -C /home/runner install llvm+clang+lld${compiler_version} target=x86_64 || true"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack -C /home/runner install llvm+clang+lld${compiler_version} target=x86_64 > /dev/null & spack -C /home/runner install llvm+clang+lld${compiler_version} target=x86_64"
 
 ARG mpi_version=
 
@@ -142,21 +147,21 @@ modules:\n\
           set:\n\
             'COMPILER_ROOT': '{prefix}'" >> /home/runner/environment/modules.yaml
 
-RUN bash -l -c "source /home/runner/.bashrc && spack module tcl refresh -y"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack module tcl refresh -y"
 
 RUN echo -e "spack env activate /home/runner/environment\n" >> /home/runner/.bashrc
-RUN bash -l -c "source /home/runner/.bashrc && echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64\" >> /home/runner/.bashrc"
-RUN bash -l -c "source /home/runner/.bashrc && export FC=\$(type -p gfortran) >> /home/runner/.bashrc"
-RUN bash -l -c "source /home/runner/.bashrc && module load llvm && spack compiler find --mixed-toolchain $COMPILER_ROOT"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64\" >> /home/runner/.bashrc"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && export FC=\$(type -p gfortran) >> /home/runner/.bashrc"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && module load llvm && spack compiler find --mixed-toolchain $COMPILER_ROOT"
 
-RUN bash -l -c "source /home/runner/.bashrc && spack external find python"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack external find python"
 
-RUN bash -l -c "source /home/runner/.bashrc && spack concretize"
-RUN bash -l -c "source /home/runner/.bashrc && cd /home/runner && spack env depfile -o Makefile"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack concretize"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && cd /home/runner && spack env depfile -o Makefile"
 # Just in case a mirror fails to pull, retry the spack install so that we can preserve
 # all of the packages that did build successfully
-RUN bash -l -c "source /home/runner/.bashrc && cd /home/runner && make -j6 || true"
-RUN bash -l -c "source /home/runner/.bashrc && cd /home/runner && make -j6"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && cd /home/runner && make -j6 || true"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && cd /home/runner && make -j6"
 RUN rm /home/runner/Makefile
 
 ENV OMPI_ALLOW_RUN_AS_ROOT=1
@@ -171,7 +176,7 @@ ENV AT2_IMAGE=${AT2_image}
 ARG AT2_image_fullpath=
 ENV AT2_IMAGE_FULLPATH=${AT2_image_fullpath}
 
-RUN bash -l -c "source /home/runner/.bashrc && spack module tcl refresh -y %llvm+clang+lld${compiler_version}"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack module tcl refresh -y %llvm+clang+lld${compiler_version}"
 RUN echo -e "\
 module load ccache\n\
 module load valgrind\n\
