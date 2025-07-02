@@ -165,12 +165,12 @@ RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack compile
 
 RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack external find python"
 
-RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack concretize"
-RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && cd /home/runner && spack env depfile -o Makefile"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack env activate /home/runner/environment && spack concretize"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack env activate /home/runner/environment && cd /home/runner && spack env depfile -o Makefile"
 # Just in case a mirror fails to pull, retry the spack install so that we can preserve
 # all of the packages that did build successfully
-RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && cd /home/runner && make -j6 || true"
-RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && cd /home/runner && make -j6"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack env activate /home/runner/environment && cd /home/runner && make -j6 || true"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack env activate /home/runner/environment && cd /home/runner && make -j6"
 RUN rm /home/runner/Makefile
 
 ENV OMPI_ALLOW_RUN_AS_ROOT=1
@@ -185,7 +185,7 @@ ENV AT2_IMAGE=${AT2_image}
 ARG AT2_image_fullpath=
 ENV AT2_IMAGE_FULLPATH=${AT2_image_fullpath}
 
-RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack module tcl refresh -y %llvm+clang+lld${compiler_version}"
+RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack env activate /home/runner/environment && spack module tcl refresh -y %llvm+clang+lld${compiler_version}"
 RUN echo -e "\
 module load ccache\n\
 module load valgrind\n\
