@@ -11,7 +11,8 @@ if [[ "${DOCKER_EXEC}" == "" ]]; then
   exit 1
 fi
 
-nohup ${DOCKER_EXEC} build --no-cache \
+# Add --no-cache if needed
+nohup ${DOCKER_EXEC} build  \
         --build-arg=compiler_version="@${CLANG_VERSION}" \
         --build-arg=mpi_version="@${OPENMPI_VERSION}" \
         -t clang-${CLANG_VERSION}-openmpi-${OPENMPI_VERSION}-trilinos-env:${USER}-test . \

@@ -39,12 +39,6 @@ RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/
 ENV SPACK_ROOT=/home/runner/spack
 ENV PATH=$SPACK_ROOT/bin:$PATH
 
-# Initialize lmod/environment modules - find the correct lmod init script
-RUN find /usr -name "lmod" -type d 2>/dev/null || echo "lmod not found in /usr"
-RUN find /etc -name "*modules*" 2>/dev/null || echo "modules not found in /etc"
-RUN if [ -f /usr/share/lmod/lmod/init/bash ]; then echo "source /usr/share/lmod/lmod/init/bash" >> /home/runner/.bashrc; fi
-RUN if [ -f /etc/profile.d/modules.sh ]; then echo "source /etc/profile.d/modules.sh" >> /home/runner/.bashrc; fi
-
 RUN echo -e "export SPACK_ROOT=/home/runner/spack\nsource /home/runner/spack/share/spack/setup-env.sh\n" >> /home/runner/.bashrc
 RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack config add config:build_jobs:64"
 RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack bootstrap now"
@@ -158,6 +152,13 @@ RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack module 
 RUN echo -e "spack env activate /home/runner/environment\n" >> /home/runner/.bashrc
 RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64\" >> /home/runner/.bashrc"
 RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && export FC=\$(type -p gfortran) >> /home/runner/.bashrc"
+
+# Initialize lmod/environment modules - find the correct lmod init script
+RUN find /usr -name "lmod" -type d 2>/dev/null || echo "lmod not found in /usr"
+RUN find /etc -name "*modules*" 2>/dev/null || echo "modules not found in /etc"
+RUN if [ -f /usr/share/lmod/lmod/init/bash ]; then echo "source /usr/share/lmod/lmod/init/bash" >> /home/runner/.bashrc; fi
+RUN if [ -f /etc/profile.d/modules.sh ]; then echo "source /etc/profile.d/modules.sh" >> /home/runner/.bashrc; fi
+
 # Skip the module load command for now since lmod may not be properly configured
 # RUN bash -c "source /usr/share/lmod/lmod/init/bash && source /home/runner/spack/share/spack/setup-env.sh && module load llvm && spack compiler find --mixed-toolchain $COMPILER_ROOT"
 RUN bash -c "source /home/runner/spack/share/spack/setup-env.sh && spack compiler find"
