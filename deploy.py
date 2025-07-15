@@ -44,11 +44,6 @@ DEPLOYS = [
         "production": True,
     },
     {
-        "image_name": "ubi8-intel-intelmpi",
-        "dockerfile": "intel-intelmpi",
-        "build_args": {},
-        "production": True,
-    },
         "image_name": "ubi8-oneapi-2024.1.0",
         "dockerfile": "oneapi",
         "build_args": {"compiler_version": "@2024.1.0"},
