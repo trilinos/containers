@@ -8,9 +8,9 @@ REGISTRY = "registry-ex.sandia.gov/trilinos-project/trilinos-containers"
 
 DEPLOYS = [
     {
-        "image_name": "ubi8-gcc-12.1.0-openmpi-4.1.6",
+        "image_name": "ubi8-gcc-12.3.0-openmpi-4.1.6",
         "dockerfile": "gnu-openmpi",
-        "build_args": {"compiler_version": "@12.1.0", "mpi_version": "@4.1.6"},
+        "build_args": {"compiler_version": "@12.3.0", "mpi_version": "@4.1.6"},
         "production": False,
     },
     {
