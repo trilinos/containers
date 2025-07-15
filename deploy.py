@@ -137,6 +137,8 @@ for image in deploys:
         .decode()
         .strip()
     )
+    if not dockerfile_ts:
+        dockerfile_ts = "local"
     build_args = [k + "=" + v for k, v in image["build_args"].items()]
     tag = (
         REGISTRY
