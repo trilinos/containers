@@ -38,6 +38,12 @@ DEPLOYS = [
         "production": True,
     },
     {
+        "image_name": "ubi10-gcc-14",
+        "dockerfile": "gnu-ubi10",
+        "build_args": {"compiler_version": "@14"},
+        "production": False,
+    },
+    {
         "image_name": "ubi8-python-3.9",
         "dockerfile": "python",
         "build_args": {},
