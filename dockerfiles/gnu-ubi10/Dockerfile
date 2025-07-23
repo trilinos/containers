@@ -11,7 +11,7 @@ RUN yum -y install gcc gcc-c++ gcc-gfortran xz bzip2 patch diffutils file make g
 RUN useradd runner
 USER runner
 
-RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout c4a4923bc68d87f5230792537a5538dc453da076
+RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout bd519af8bc62a6f9eea6f4c0fa0bf498a0cc0dfb
 RUN echo -e "export SPACK_ROOT=/home/runner/spack\nsource /home/runner/spack/share/spack/setup-env.sh\n" >> /home/runner/.bashrc
 RUN bash -l -c "spack config add config:build_jobs:64"
 RUN bash -l -c "spack bootstrap now"

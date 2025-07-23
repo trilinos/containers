@@ -14,7 +14,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN useradd runner
 USER runner
 
-RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout develop-2025-01-12
+RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout bd519af8bc62a6f9eea6f4c0fa0bf498a0cc0dfb
 RUN echo -e "export SPACK_ROOT=/home/runner/spack\nsource /home/runner/spack/share/spack/setup-env.sh\n" >> /home/runner/.bashrc
 RUN bash -l -c "spack config add config:build_jobs:64"
 RUN bash -l -c "spack bootstrap now"
@@ -22,8 +22,8 @@ RUN bash -l -c "spack bootstrap now"
 ARG compiler_version=
 
 RUN bash -l -c "spack compiler find"
-RUN bash -l -c "spack -C /home/runner install gcc${compiler_version} target=x86_64 > /dev/null & spack -C /home/runner install gcc${compiler_version} target=x86_64 || true"
-RUN bash -l -c "spack -C /home/runner install gcc${compiler_version} target=x86_64 > /dev/null & spack -C /home/runner install gcc${compiler_version} target=x86_64"
+RUN bash -l -c "spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64 || true"
+RUN bash -l -c "spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64"
 
 ARG mpi_version=
 
@@ -38,11 +38,6 @@ spack:\n\
   - compiler:\n\
     - gcc${compiler_version}\n\
   - packages:\n\
-    - ccache\n\
-    - gdb\n\
-    - valgrind\n\
-    - cmake\n\
-    - ninja\n\
     - boost +program_options+system\n\
     - cgns\n\
     - hdf5 +hl\n\
@@ -61,8 +56,6 @@ spack:\n\
     - py-numpy\n\
     - py-pybind11\n\
     - openblas\n\
-    - emacs\n\
-    - gh\n\
     - fmt\n\
     - unzip\n\
   concretizer:\n\
@@ -71,6 +64,13 @@ spack:\n\
   - matrix:\n\
     - [\$packages]\n\
     - [\$%compiler]\n\
+  - ccache%gcc\n\
+  - gdb\n\
+  - valgrind\n\
+  - cmake\n\
+  - ninja\n\
+  - emacs\n\
+  - gh\n\
   view: false\n\
   packages:\n\
     all:\n\

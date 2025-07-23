@@ -7,14 +7,15 @@ RUN rm -rf /etc/rhsm-host
 RUN yum -y --setopt=tsflags=nodocs update && yum clean all
 
 RUN yum -y install gcc gcc-c++ xz bzip2 patch diffutils file make git python38 procps
-RUN git clone https://github.com/spack/spack.git /spack && cd /spack && git checkout develop-2025-01-12
+
+RUN git clone https://github.com/spack/spack.git /spack && cd /spack && git checkout bd519af8bc62a6f9eea6f4c0fa0bf498a0cc0dfb
 RUN echo -e "export SPACK_ROOT=/spack\nsource /spack/share/spack/setup-env.sh\n" > /etc/profile.d/spack.sh
 RUN bash -l -c "spack config add config:build_jobs:64"
 RUN bash -l -c "spack bootstrap now"
 
 ARG compiler_version=
 RUN bash -l -c "spack compiler find"
-RUN bash -l -c "spack install llvm-amdgpu${compiler_version} target=x86_64 > /dev/null & spack install llvm-amdgpu${compiler_version} target=x86_64"
+RUN bash -l -c "spack install --deprecated llvm-amdgpu${compiler_version} target=x86_64"
 RUN bash -l -c "spack view symlink -i /opt/rocmcc-5.7.1 llvm-amdgpu@5.7.1"
 RUN echo -e "export PATH=/opt/rocmcc-5.7.1/bin:\$PATH\nexport LD_LIBRARY_PATH=/opt/rocmcc-5.7.1/lib:\$LD_LIBRARY_PATH\nexport MANPATH=/opt/rocmcc-5.7.1/share/man:\$MANPATH\n" >> /etc/profile.d/spack.sh
 
