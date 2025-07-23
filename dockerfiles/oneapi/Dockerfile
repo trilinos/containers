@@ -14,7 +14,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN useradd runner
 USER runner
 
-RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout develop-2025-01-12
+RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout bd519af8bc62a6f9eea6f4c0fa0bf498a0cc0dfb
 RUN echo -e "export SPACK_ROOT=/home/runner/spack\nsource /home/runner/spack/share/spack/setup-env.sh\n" >> /home/runner/.bashrc
 RUN bash -l -c "spack config add config:build_jobs:64"
 RUN bash -l -c "spack bootstrap now"
@@ -22,8 +22,8 @@ RUN bash -l -c "spack bootstrap now"
 ARG compiler_version=
 
 RUN bash -l -c "spack compiler find"
-RUN bash -l -c "spack -C /home/runner install intel-oneapi-compilers${compiler_version} target=x86_64 > /dev/null & spack -C /home/runner install intel-oneapi-compilers${compiler_version} target=x86_64 || true"
-RUN bash -l -c "spack -C /home/runner install intel-oneapi-compilers${compiler_version} target=x86_64 > /dev/null & spack -C /home/runner install intel-oneapi-compilers${compiler_version} target=x86_64"
+RUN bash -l -c "spack -C /home/runner install --deprecated intel-oneapi-compilers${compiler_version} target=x86_64 || true"
+RUN bash -l -c "spack -C /home/runner install --deprecated intel-oneapi-compilers${compiler_version} target=x86_64"
 
 ARG mpi_version=
 
@@ -38,11 +38,7 @@ spack:\n\
   - compiler:\n\
     - oneapi${compiler_version}\n\
   - packages:\n\
-    - gdb\n\
-    - valgrind\n\
-    - cmake\n\
-    - ninja\n\
-    - boost@1.84+program_options+system\n\
+    - boost@1.84 +program_options+system\n\
     - cgns\n\
     - hdf5 +hl\n\
     - metis\n\
@@ -55,8 +51,6 @@ spack:\n\
     - intel-oneapi-mpi${mpi_version}\n\
     - matio\n\
     - intel-oneapi-mkl\n\
-    - emacs\n\
-    - gh\n\
     - fmt\n\
     - unzip\n\
   concretizer:\n\
@@ -66,6 +60,12 @@ spack:\n\
     - [\$packages]\n\
     - [\$%compiler]\n\
   - ccache%gcc\n\
+  - gdb\n\
+  - valgrind\n\
+  - cmake\n\
+  - ninja\n\
+  - emacs\n\
+  - gh\n\
   view: false\n\
   packages:\n\
     all:\n\
