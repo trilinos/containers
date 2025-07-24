@@ -19,7 +19,6 @@ RUN bash -l -c "spack bootstrap now"
 ARG compiler_version=
 
 RUN bash -l -c "spack compiler find"
-RUN bash -l -c "spack external find"
 RUN bash -l -c "spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64 || true"
 RUN bash -l -c "spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64"
 
@@ -134,7 +133,6 @@ RUN bash -l -c "spack bootstrap now"
 RUN echo -e "spack env activate /home/runner/environment\n" >> /home/runner/.bashrc
 RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64\" >> /home/runner/.bashrc"
 RUN bash -l -c "module load gcc && spack compiler find $COMPILER_ROOT"
-RUN bash -l -c "spack external find"
 
 RUN bash -l -c "spack concretize"
 RUN bash -l -c "cd /home/runner && spack env depfile -o Makefile"
