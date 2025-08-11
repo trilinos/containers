@@ -28,23 +28,16 @@ RUN echo -e "\
 spack:\n\
   include:\n\
   - modules.yaml\n\
-  definitions:\n\
-  - compiler:\n\
-    - gcc\n\
-  - packages:\n\
-    - cmake\n\
-    - ninja\n\
-    - py-pytest-cov\n\
-    - zlib\n\
-    - emacs\n\
-    - gh\n\
-    - unzip\n\
   concretizer:\n\
     unify: when_possible\n\
   specs:\n\
-  - matrix:\n\
-    - [\$packages]\n\
-    - [\$%compiler]\n\
+  - cmake\n\
+  - ninja\n\
+  - py-pytest-cov\n\
+  - zlib\n\
+  - emacs\n\
+  - gh\n\
+  - unzip\n\
   view: false\n\
   packages:\n\
     all:\n\
