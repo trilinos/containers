@@ -50,9 +50,9 @@ DEPLOYS = [
         "production": True,
     },
     {
-        "image_name": "ubi8-oneapi-2024.1.0",
+        "image_name": "ubi9-oneapi-2024.2",
         "dockerfile": "oneapi",
-        "build_args": {"compiler_version": "@2024.1.0"},
+        "build_args": {"compiler_version": "@2024.2"},
         "production": True,
     },
     {

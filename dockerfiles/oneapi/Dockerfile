@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8:latest
+FROM registry.access.redhat.com/ubi9:latest
 
 # Disable all host repositories so that we're only using things from UBI
 # (in the event that you're building a UBI container on a RHEL host, RedHat
@@ -6,10 +6,7 @@ FROM registry.access.redhat.com/ubi8:latest
 RUN rm -rf /etc/rhsm-host
 RUN yum -y --setopt=tsflags=nodocs update && yum clean all
 
-RUN yum -y install gcc gcc-c++ xz bzip2 patch diffutils file make git python38 procps environment-modules gettext unzip libX11-devel
-
-# FIXME: Remove this someday
-RUN ln -s /usr/bin/python3 /usr/bin/python
+RUN yum -y install gcc gcc-c++ xz bzip2 patch diffutils file make git python procps environment-modules gettext unzip libX11-devel perl
 
 RUN useradd runner
 USER runner
