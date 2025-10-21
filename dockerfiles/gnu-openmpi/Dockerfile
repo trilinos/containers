@@ -55,7 +55,7 @@ spack:\n\
     - py-mpi4py\n\
     - py-numpy\n\
     - py-pybind11\n\
-    - openblas\n\
+    - netlib-lapack\n\
     - fmt\n\
     - unzip\n\
   concretizer:\n\
@@ -189,7 +189,7 @@ module load binder\n\
 module load py-mpi4py\n\
 module load py-numpy\n\
 module load py-pybind11\n\
-module load openblas\n\
+module load netlib-lapack\n\
 module load emacs\n\
 module load gh\n\
 \n\
