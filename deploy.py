@@ -20,9 +20,9 @@ DEPLOYS = [
         "production": True,
     },
     {
-        "image_name": "ubi8-cuda-12.4.1-gcc-10.4.0-openmpi-4.1.6",
+        "image_name": "ubi8-cuda-12.4.1-gcc-12.3.0-openmpi-4.1.6",
         "dockerfile": "cuda-gnu-openmpi",
-        "build_args": {"compiler_version": "@10.4.0", "mpi_version": "@4.1.6", "cuda_version": "@12.4.1"},
+        "build_args": {"compiler_version": "@12.3.0", "mpi_version": "@4.1.6", "cuda_version": "@12.4.1"},
         "production": True,
     },
     {
