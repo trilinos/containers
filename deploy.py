@@ -58,9 +58,9 @@ DEPLOYS = [
 ]
 
 
-def list_container_images(gitlab_url="https://gitlab-ex.sandia.gov", project_id=3512):
+def get_registry_images(gitlab_url="https://gitlab-ex.sandia.gov", project_id=3512):
     """
-    List container images in a private GitLab repository.
+    Get a list of container images in a private GitLab repository.
 
     Args:
     gitlab_url (str): The URL of your GitLab instance.
@@ -83,12 +83,22 @@ def list_container_images(gitlab_url="https://gitlab-ex.sandia.gov", project_id=
     return image_list
 
 
+def print_deploy_configs():
+    """Print names of deployable container configurations."""
+    print("\n".join(c["image_name"] for c in DEPLOYS))
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("IMAGES", nargs="*")
+parser.add_argument("--list", action="store_true", help="List deployable container configurations")
 parser.add_argument("--skip-login", action="store_true", help="Skip registry login")
 args = parser.parse_args()
 
 repo_root = os.path.abspath(os.path.dirname(__file__))
+
+if args.list:
+    print_deploy_configs()
+    exit()
 
 if not args.skip_login:
     subprocess.check_call(
@@ -141,7 +151,7 @@ for image in deploys:
         + ":"
         + dockerfile_ts
     )
-    if tag in list_container_images():
+    if tag in get_registry_images():
         print(f"tag {tag} already exists in container registry, skipping build")
         continue
     build_args.append(f"AT2_image_fullpath={tag}")
