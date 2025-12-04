@@ -57,6 +57,7 @@ spack:\n\
   - fmt\n\
   - emacs\n\
   - gh\n\
+  - googletest\n\
   concretizer:\n\
     unify: when_possible\n\
   view: false\n" > /home/runner/environment/spack.yaml
@@ -171,6 +172,7 @@ module load matio\n\
 module load openblas\n\
 module load emacs\n\
 module load gh\n\
+module load googletest\n\
 \n\
 export CCACHE_NODISABLE=true\n\
 export CCACHE_BASEDIR=$HOME\n\

@@ -71,6 +71,7 @@ spack:\n\
   - ninja\n\
   - emacs\n\
   - gh\n\
+  - googletest\n\
   view: false\n\
   packages:\n\
     all:\n\
@@ -192,6 +193,7 @@ module load py-pybind11\n\
 module load netlib-lapack\n\
 module load emacs\n\
 module load gh\n\
+module load googletest\n\
 \n\
 export CCACHE_NODISABLE=true\n\
 export CCACHE_BASEDIR=$HOME\n\
