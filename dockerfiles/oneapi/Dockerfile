@@ -50,6 +50,7 @@ spack:\n\
     - intel-oneapi-mkl\n\
     - fmt\n\
     - unzip\n\
+    - googletest\n\
   concretizer:\n\
     unify: when_possible\n\
   specs:\n\
@@ -179,6 +180,7 @@ module load matio\n\
 module load intel-oneapi-mkl\n\
 module load emacs\n\
 module load gh\n\
+module load googletest\n\
 \n\
 export CCACHE_NODISABLE=true\n\
 export CCACHE_BASEDIR=$HOME\n\

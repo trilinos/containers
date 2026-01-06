@@ -47,6 +47,7 @@ spack:\n\
     - py-pybind11\n\
     - openblas\n\
     - fmt\n\
+    - googletest\n\
   concretizer:\n\
     unify: when_possible\n\
   specs:\n\
@@ -174,6 +175,7 @@ module load py-pybind11\n\
 module load openblas\n\
 module load emacs\n\
 module load gh\n\
+module load googletest\n\
 \n\
 export CCACHE_NODISABLE=true\n\
 export CCACHE_BASEDIR=$HOME\n\
