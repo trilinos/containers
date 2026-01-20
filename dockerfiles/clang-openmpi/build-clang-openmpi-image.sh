@@ -14,6 +14,8 @@ fi
 nohup ${DOCKER_EXEC} build \
         --build-arg=compiler_version="@${CLANG_VERSION}" \
         --build-arg=mpi_version="@${OPENMPI_VERSION}" \
+        --no-cache \
+        --format=docker \
         -t clang-${CLANG_VERSION}-openmpi-${OPENMPI_VERSION}-trilinos-env:${USER}-test . \
   &> clang-${CLANG_VERSION}-openmpi-${OPENMPI_VERSION}-trilinos-env.output &
 

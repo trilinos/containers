@@ -163,7 +163,7 @@ for image in deploys:
         f.append("--build-arg")
         f.append(e)
     try:
-        subprocess.check_call(["podman", "build", "--tag", tag] + f + [dockerfile])
+        subprocess.check_call(["podman", "build", "--tag", tag, "--format=docker"] + f + [dockerfile])
     except subprocess.CalledProcessError as e:
         print(f"check_call() returned {e.returncode}")
         continue
