@@ -14,6 +14,14 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN useradd runner
 USER runner
 
+# Open up /home/runner so other regular users can do anything, just like root can
+RUN printf '%s\n' \
+  '#!/usr/bin/env bash' \
+  'umask 000' \
+  'exec /bin/bash -o pipefail -c "$*"' \
+  > /tmp/run-with-umask && chmod a+x /tmp/run-with-umask
+SHELL ["/tmp/run-with-umask"]
+
 RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout bd519af8bc62a6f9eea6f4c0fa0bf498a0cc0dfb
 RUN echo -e "export SPACK_ROOT=/home/runner/spack\nsource /home/runner/spack/share/spack/setup-env.sh\n" >> /home/runner/.bashrc
 RUN bash -l -c "spack config add config:build_jobs:64"
@@ -204,3 +212,6 @@ RUN sed -i "s/^\(ARG compiler_version=\).*/\1${compiler_version}/" ${AT2_ARTIFAC
 
 USER root
 RUN echo -e "source /home/runner/.bashrc" >> /root/.bashrc
+
+# Must open the base directory to allow writing into it at the very end
+RUN chmod a+rwX /home/runner

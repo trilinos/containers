@@ -58,7 +58,7 @@ DEPLOYS = [
 ]
 
 
-def get_registry_images(gitlab_url="https://gitlab-ex.sandia.gov", project_id=3512):
+def get_registry_images(gitlab_url="https://gitlab-ex.sandia.gov", project_id=3512, skip_login=False):
     """
     Get a list of container images in a private GitLab repository.
 
@@ -70,7 +70,7 @@ def get_registry_images(gitlab_url="https://gitlab-ex.sandia.gov", project_id=35
     list: A list of container image locations for all tags.
     """
     # If we're not logging in just return an empty list
-    if args.skip_login:
+    if skip_login:
         return []
 
     import gitlab
@@ -88,88 +88,108 @@ def print_deploy_configs():
     print("\n".join(c["image_name"] for c in DEPLOYS))
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("IMAGES", nargs="*")
-parser.add_argument("--list", action="store_true", help="List deployable container configurations")
-parser.add_argument("--skip-login", action="store_true", help="Skip registry login")
-args = parser.parse_args()
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("IMAGES", nargs="*")
+    parser.add_argument("--list", action="store_true", help="List deployable container configurations")
+    parser.add_argument("--format-docker", action="store_true", help="Build specified image with the Docker Manifest format.")
+    parser.add_argument("--skip-login", action="store_true", help="Skip registry login")
+    return  parser.parse_args()
 
-repo_root = os.path.abspath(os.path.dirname(__file__))
 
-if args.list:
-    print_deploy_configs()
-    exit()
+def main():
+    repo_root = os.path.abspath(os.path.dirname(__file__))
+    os.chdir(repo_root)
 
-if not args.skip_login:
-    subprocess.check_call(
-        [
-            "docker",
-            "login",
-            "-u",
-            "gitlab+deploy-token-23",
-            "-p",
-            os.environ["AT2_BUILD_TOKEN"],
-            "registry-ex.sandia.gov",
-        ]
-    )
+    args = parse_args()
 
-date_format = "%Y%m%d"
-os.chdir(repo_root)
-
-if args.IMAGES:
-    deploys = [x for x in DEPLOYS if x["image_name"] in args.IMAGES]
-else:
-    deploys = DEPLOYS
-
-for image in deploys:
-    dockerfile = os.path.join(repo_root, "dockerfiles", image["dockerfile"])
-    path = dockerfile + "/Dockerfile"
-    # get the timestamp from the Dockerfile commit (YYYYMMDD)
-    dockerfile_ts = (
-        subprocess.check_output(
+    if args.list:
+        print_deploy_configs()
+        exit()
+    if not args.skip_login:
+        subprocess.check_call(
             [
-                "git",
-                "--no-pager",
-                "log",
-                "-1",
-                "--format=%cd",
-                f"--date=format:{date_format}",
-                "--",
-                path,
+                "podman",
+                "login",
+                "-u",
+                "gitlab+deploy-token-23",
+                "-p",
+                os.environ["AT2_BUILD_TOKEN"],
+                "registry-ex.sandia.gov",
             ]
         )
-        .decode()
-        .strip()
-    )
-    if not dockerfile_ts:
-        dockerfile_ts = "local"
-    build_args = [k + "=" + v for k, v in image["build_args"].items()]
-    tag = (
-        REGISTRY
-        + ("/production/" if image["production"] else "/experimental/")
-        + image["image_name"]
-        + ":"
-        + dockerfile_ts
-    )
-    if tag in get_registry_images():
-        print(f"tag {tag} already exists in container registry, skipping build")
-        continue
-    build_args.append(f"AT2_image_fullpath={tag}")
-    build_args.append(f"AT2_image={image['image_name']}")
-    print(f"Building Dockerfile '{dockerfile}' with args {build_args}")
-    print(f"Tagging as {tag}")
-    f = []
-    for e in build_args:
-        f.append("--build-arg")
-        f.append(e)
-    try:
-        subprocess.check_call(["podman", "build", "--tag", tag, "--format=docker"] + f + [dockerfile])
-    except subprocess.CalledProcessError as e:
-        print(f"check_call() returned {e.returncode}")
-        continue
-    if not args.skip_login:
-        subprocess.check_call(["podman", "push", tag])
-        latest_tag = (
-            REGISTRY + ("/production/" if image["production"] else "/experimental/") + image["image_name"] + ":latest"
+
+    if args.IMAGES:
+        deploys = [x for x in DEPLOYS if x["image_name"] in args.IMAGES]
+    else:
+        deploys = DEPLOYS
+
+    date_format = "%Y%m%d"
+    for image in deploys:
+        dockerfile = os.path.join(repo_root, "dockerfiles", image["dockerfile"])
+        path = dockerfile + "/Dockerfile"
+
+        # Get the timestamp from the Dockerfile commit (YYYYMMDD)
+        dockerfile_ts = (
+            subprocess.check_output(
+                [
+                    "git",
+                    "--no-pager",
+                    "log",
+                    "-1",
+                    "--format=%cd",
+                    f"--date=format:{date_format}",
+                    "--",
+                    path,
+                ]
+            )
+            .decode()
+            .strip()
         )
-        subprocess.check_call(["podman", "push", tag, latest_tag])
+        if not dockerfile_ts:
+            dockerfile_ts = "local"
+
+        tag = (
+            REGISTRY
+            + ("/production/" if image["production"] else "/experimental/")
+            + image["image_name"]
+            + ":"
+            + dockerfile_ts
+        )
+        if tag in get_registry_images(skip_login=args.skip_login):
+            print(f"tag {tag} already exists in container registry, skipping build")
+            continue
+        print(f"Tagging as {tag}")
+
+        build_args = [k + "=" + v for k, v in image["build_args"].items()]
+        build_args.append(f"AT2_image_fullpath={tag}")
+        build_args.append(f"AT2_image={image['image_name']}")
+
+        podman_args = []
+        if args.format_docker:
+            podman_args.append("--format=docker")
+
+        for e in build_args:
+            podman_args.append("--build-arg")
+            podman_args.append(e)
+
+        print(f"Building Dockerfile '{dockerfile}' with args {podman_args}")
+
+        try:
+            subprocess.check_call(["podman", "build", "--tag", tag, "--format=docker"] + podman_args + [dockerfile])
+
+        except subprocess.CalledProcessError as e:
+            print(f"check_call() returned {e.returncode}")
+            continue
+
+        if not args.skip_login:
+            subprocess.check_call(["podman", "push", tag])
+            latest_tag = (
+                REGISTRY + ("/production/" if image["production"] else "/experimental/") + image["image_name"] + ":latest"
+            )
+            subprocess.check_call(["podman", "push", tag, latest_tag])
+
+
+if __name__ == "__main__":
+    main()
+
