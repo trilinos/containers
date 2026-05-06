@@ -1,4 +1,6 @@
-FROM registry.access.redhat.com/ubi8:latest
+# Pinned to platform agnostic ubi8.10-1778062799
+ARG base_image=registry.access.redhat.com/ubi8/ubi@sha256:8f757bfe94700eee7d26c885cd16bf3ae9923edf38f984ef3da50d2ce937fc5e
+FROM ${base_image}
 
 # Disable all host repositories so that we're only using things from UBI
 # (in the event that you're building a UBI container on a RHEL host, RedHat
