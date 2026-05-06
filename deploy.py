@@ -50,9 +50,9 @@ DEPLOYS = [
         "production": True,
     },
     {
-        "image_name": "ubi9-clang-19.1.6-openmpi-4.1.6",
+        "image_name": "ubi9-clang-19.1.7-openmpi-4.1.6",
         "dockerfile": "clang-openmpi",
-        "build_args": {"compiler_version": "@19.1.6", "mpi_version": "@4.1.6"},
+        "build_args": {"compiler_version": "@19.1.7", "mpi_version": "@4.1.6"},
         "production": True,
     },
 ]

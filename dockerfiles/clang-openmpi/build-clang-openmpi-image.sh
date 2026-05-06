@@ -1,5 +1,5 @@
 #/bin/bash
-export CLANG_VERSION=19.1.6
+export CLANG_VERSION=19.1.7
 export OPENMPI_VERSION=4.1.6
 
 DOCKER_EXEC=$(which podman 2> /dev/null)
