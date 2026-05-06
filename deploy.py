@@ -11,7 +11,7 @@ DEPLOYS = [
         "image_name": "ubi8-gcc-12.3.0-openmpi-4.1.6",
         "dockerfile": "gnu-openmpi",
         "build_args": {"compiler_version": "@12.3.0", "mpi_version": "@4.1.6"},
-        "production": False,
+        "production": True,
     },
     {
         "image_name": "ubi8-cuda-12.4.1-gcc-12.3.0-openmpi-4.1.6",
