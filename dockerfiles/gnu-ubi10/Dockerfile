@@ -1,5 +1,5 @@
 # Pinned to platform agnostic ubi10.1-1778072767
-ARG base_image=registry.access.redhat.com/ubi10/ubi@sha256:10c27e6f3b5e3b9a6c24117a9b6965d9762addcc08cb066ef0b9f41e5a3ceea8
+ARG base_image=registry.access.redhat.com/ubi10/ubi@sha256:0e50aa0897bdbc2b61d6bc9ec2f0478a51ac001cccb8578e9962e040bc754539
 FROM ${base_image}
 
 # Disable all host repositories so that we're only using things from UBI
