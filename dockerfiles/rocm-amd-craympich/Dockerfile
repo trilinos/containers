@@ -12,7 +12,7 @@ RUN git clone https://github.com/spack/spack.git /spack && cd /spack && git chec
 RUN echo -e "export SPACK_ROOT=/spack\nsource /spack/share/spack/setup-env.sh\n" > /etc/profile.d/spack.sh
 RUN bash -l -c "spack config add config:build_jobs:64"
 # Pinned spack-packages to v2025.11.0
-RUN bash -l -c "spack repo update builtin --commit 119680aeee8ea802c6111b7167583bddef97e82f"
+RUN bash -l -c "spack repo update builtin --scope defaults --commit 119680aeee8ea802c6111b7167583bddef97e82f"
 RUN bash -l -c "spack bootstrap now"
 
 ARG compiler_version=
