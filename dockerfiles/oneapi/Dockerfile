@@ -1,4 +1,6 @@
-FROM registry.access.redhat.com/ubi9:latest
+# Pinned to amd64 ubi9.7-1778044007
+ARG base_image=registry.access.redhat.com/ubi9/ubi@sha256:f9a905cb655db94303bb2a37f150256a4d24c5ef7da07071888b41b52b588e5b
+FROM ${base_image}
 
 # Disable all host repositories so that we're only using things from UBI
 # (in the event that you're building a UBI container on a RHEL host, RedHat
@@ -14,6 +16,8 @@ USER runner
 RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout bd519af8bc62a6f9eea6f4c0fa0bf498a0cc0dfb
 RUN echo -e "export SPACK_ROOT=/home/runner/spack\nsource /home/runner/spack/share/spack/setup-env.sh\n" >> /home/runner/.bashrc
 RUN bash -l -c "spack config add config:build_jobs:64"
+# Pinned spack-packages to v2025.11.0
+RUN bash -l -c "spack repo update builtin --scope defaults --commit 119680aeee8ea802c6111b7167583bddef97e82f"
 RUN bash -l -c "spack bootstrap now"
 
 ARG compiler_version=
