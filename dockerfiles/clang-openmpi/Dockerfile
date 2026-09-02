@@ -23,8 +23,8 @@ RUN bash -l -c "spack bootstrap now"
 ARG compiler_version=
 
 RUN bash -l -c "spack compiler find"
-RUN bash -l -c "spack -C /home/runner install --deprecated llvm+clang+lld${compiler_version} target=x86_64 || true"
-RUN bash -l -c "spack -C /home/runner install --deprecated llvm+clang+lld${compiler_version} target=x86_64"
+RUN bash -l -c "spack -C /home/runner install --deprecated llvm+llvm_link_dylib+clang+lld${compiler_version} target=x86_64 || true"
+RUN bash -l -c "spack -C /home/runner install --deprecated llvm+llvm_link_dylib+clang+lld${compiler_version} target=x86_64"
 
 ARG mpi_version=
 
