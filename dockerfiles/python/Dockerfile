@@ -117,12 +117,18 @@ RUN bash -l -c "spack compiler find $COMPILER_ROOT"
 
 
 RUN bash -l -c "spack concretize"
-RUN bash -l -c "cd /home/runner && spack env depfile -o Makefile"
-# Just in case a mirror fails to pull, retry the spack install so that we can preserve
-# all of the packages that did build successfully
-RUN bash -l -c "cd /home/runner && make -j6 || true"
-RUN bash -l -c "cd /home/runner && make -j6"
-RUN rm /home/runner/Makefile
+# Export spack environment into a Makefile and run
+# `make` twice to mimic a retry if a pull from spack mirror fails.
+# Perform all the related cleanup under a single RUN to avoid
+# including ghost files in the final image layer.
+RUN bash -l -c " \
+    cd /home/runner && \
+    spack env depfile -o Makefile && \
+    (make -j6 || true) && \
+    make -j6 && \
+    spack clean --downloads && \
+    rm Makefile && \
+    rm -rf .cache"
 
 CMD [ "/bin/bash" ]
 

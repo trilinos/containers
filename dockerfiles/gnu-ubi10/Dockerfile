@@ -23,8 +23,10 @@ RUN bash -l -c "spack bootstrap now"
 ARG compiler_version=
 
 RUN bash -l -c "spack compiler find"
-RUN bash -l -c "spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64 || true"
-RUN bash -l -c "spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64"
+RUN bash -l -c "\
+    (spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64 || true) && \
+    spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64 && \
+    spack clean --downloads"
 
 RUN mkdir /home/runner/environment
 # Consider using here-documents once we get to Buildah 1.33.0+
@@ -136,12 +138,18 @@ RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/
 RUN bash -l -c "module load gcc && spack compiler find $COMPILER_ROOT"
 
 RUN bash -l -c "spack concretize"
-RUN bash -l -c "cd /home/runner && spack env depfile -o Makefile"
-# Just in case a mirror fails to pull, retry the spack install so that we can preserve
-# all of the packages that did build successfully
-RUN bash -l -c "cd /home/runner && make -j6 || true"
-RUN bash -l -c "cd /home/runner && make -j6"
-RUN rm /home/runner/Makefile
+# Export spack environment into a Makefile and run
+# `make` twice to mimic a retry if a pull from spack mirror fails.
+# Perform all the related cleanup under a single RUN to avoid
+# including ghost files in the final image layer.
+RUN bash -l -c " \
+    cd /home/runner && \
+    spack env depfile -o Makefile && \
+    (make -j6 || true) && \
+    make -j6 && \
+    spack clean --downloads && \
+    rm Makefile && \
+    rm -rf .cache"
 
 CMD [ "/bin/bash" ]
 
