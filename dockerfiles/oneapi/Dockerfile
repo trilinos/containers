@@ -133,8 +133,6 @@ modules:\n\
             'COMPILER_ROOT': '{prefix}'" >> /home/runner/environment/modules.yaml
 
 RUN bash -l -c "spack module tcl refresh -y"
-
-RUN rm -rf /home/runner/.spack
 RUN bash -l -c "spack bootstrap now"
 
 RUN echo -e "spack env activate /home/runner/environment\n" >> /home/runner/.bashrc
