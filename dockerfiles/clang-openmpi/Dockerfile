@@ -57,6 +57,10 @@ spack:\n\
   - zlib\n\
   - openmpi${mpi_version}\n\
   - matio\n\
+  - python\n\
+  - binder\n\
+  - py-numpy\n\
+  - py-pybind11\n\
   - openblas\n\
   - fmt\n\
   - emacs\n\
@@ -173,6 +177,11 @@ module load superlu\n\
 module load superlu-dist\n\
 module load zlib\n\
 module load matio\n\
+module load matio\n\
+module load python\n\
+module load binder\n\
+module load py-numpy\n\
+module load py-pybind11\n\
 module load openblas\n\
 module load emacs\n\
 module load gh\n\
