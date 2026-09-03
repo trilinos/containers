@@ -62,10 +62,6 @@ spack:\n\
     - openmpi${mpi_version}+cuda\n\
     - matio\n\
     - python\n\
-    - binder\n\
-    - py-mpi4py\n\
-    - py-numpy\n\
-    - py-pybind11\n\
     - netlib-lapack\n\
     - googletest\n\
   concretizer:\n\
@@ -191,10 +187,6 @@ module load superlu-dist\n\
 module load zlib\n\
 module load matio\n\
 module load python\n\
-module load binder\n\
-module load py-mpi4py\n\
-module load py-numpy\n\
-module load py-pybind11\n\
 module load netlib-lapack\n\
 module load emacs\n\
 module load gh\n\

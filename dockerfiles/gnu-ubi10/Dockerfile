@@ -45,10 +45,6 @@ spack:\n\
     - superlu@5\n\
     - zlib\n\
     - matio\n\
-    - python\n\
-    - binder\n\
-    - py-numpy\n\
-    - py-pybind11\n\
     - openblas\n\
     - fmt\n\
     - googletest\n\
@@ -172,10 +168,6 @@ module load netcdf-c\n\
 module load superlu\n\
 module load zlib\n\
 module load matio\n\
-module load python\n\
-module load binder\n\
-module load py-numpy\n\
-module load py-pybind11\n\
 module load openblas\n\
 module load emacs\n\
 module load gh\n\
