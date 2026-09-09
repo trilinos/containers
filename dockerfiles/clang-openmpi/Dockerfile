@@ -42,6 +42,9 @@ spack:\n\
       require:\n\
       - '%clang${compiler_version}'\n\
       target: [x86_64]\n\
+    binder:\n\
+     require:\n\
+     - 'ldflags=-lLLVM'\n\
   specs:\n\
   - ccache\n\
   - valgrind\n\
