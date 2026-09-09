@@ -23,8 +23,10 @@ RUN bash -l -c "spack bootstrap now"
 ARG compiler_version=
 
 RUN bash -l -c "spack compiler find"
-RUN bash -l -c "spack -C /home/runner install --deprecated llvm+clang+lld${compiler_version} target=x86_64 || true"
-RUN bash -l -c "spack -C /home/runner install --deprecated llvm+clang+lld${compiler_version} target=x86_64"
+RUN bash -l -c "\
+    (spack -C /home/runner install --deprecated llvm+link_llvm_dylib+clang+lld${compiler_version} target=x86_64 || true) && \
+    spack -C /home/runner install --deprecated llvm+link_llvm_dylib+clang+lld${compiler_version} target=x86_64 && \
+    spack clean --downloads"
 
 ARG mpi_version=
 
@@ -40,6 +42,9 @@ spack:\n\
       require:\n\
       - '%clang${compiler_version}'\n\
       target: [x86_64]\n\
+    binder:\n\
+     require:\n\
+     - 'ldflags=-lLLVM'\n\
   specs:\n\
   - ccache\n\
   - valgrind\n\
@@ -57,6 +62,10 @@ spack:\n\
   - zlib\n\
   - openmpi${mpi_version}\n\
   - matio\n\
+  - python\n\
+  - binder\n\
+  - py-numpy\n\
+  - py-pybind11\n\
   - openblas\n\
   - fmt\n\
   - emacs\n\
@@ -133,14 +142,19 @@ RUN bash -l -c "export FC=\$(type -p gfortran) >> /home/runner/.bashrc"
 RUN bash -l -c "module load llvm && spack compiler find --mixed-toolchain $COMPILER_ROOT"
 
 RUN bash -l -c "spack external find python"
-
 RUN bash -l -c "spack concretize"
-RUN bash -l -c "cd /home/runner && spack env depfile -o Makefile"
-# Just in case a mirror fails to pull, retry the spack install so that we can preserve
-# all of the packages that did build successfully
-RUN bash -l -c "cd /home/runner && make -j6 || true"
-RUN bash -l -c "cd /home/runner && make -j6"
-RUN rm /home/runner/Makefile
+# Export spack environment into a Makefile and run
+# `make` twice to mimic a retry if a pull from spack mirror fails.
+# Perform all the related cleanup under a single RUN to avoid
+# including ghost files in the final image layer.
+RUN bash -l -c " \
+    cd /home/runner && \
+    spack env depfile -o Makefile && \
+    (make -j6 || true) && \
+    make -j6 && \
+    spack clean --downloads && \
+    rm Makefile && \
+    rm -rf .cache"
 
 ENV OMPI_ALLOW_RUN_AS_ROOT=1
 ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
@@ -173,6 +187,11 @@ module load superlu\n\
 module load superlu-dist\n\
 module load zlib\n\
 module load matio\n\
+module load matio\n\
+module load python\n\
+module load binder\n\
+module load py-numpy\n\
+module load py-pybind11\n\
 module load openblas\n\
 module load emacs\n\
 module load gh\n\

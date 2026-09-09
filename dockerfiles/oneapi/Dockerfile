@@ -23,8 +23,10 @@ RUN bash -l -c "spack bootstrap now"
 ARG compiler_version=
 
 RUN bash -l -c "spack compiler find"
-RUN bash -l -c "spack -C /home/runner install --deprecated intel-oneapi-compilers${compiler_version} target=x86_64 || true"
-RUN bash -l -c "spack -C /home/runner install --deprecated intel-oneapi-compilers${compiler_version} target=x86_64"
+RUN bash -l -c "\
+    (spack -C /home/runner install --deprecated intel-oneapi-compilers${compiler_version} target=x86_64 || true) && \
+    spack -C /home/runner install --deprecated intel-oneapi-compilers${compiler_version} target=x86_64 && \
+    spack clean --downloads"
 
 ARG mpi_version=
 
@@ -133,8 +135,6 @@ modules:\n\
             'COMPILER_ROOT': '{prefix}'" >> /home/runner/environment/modules.yaml
 
 RUN bash -l -c "spack module tcl refresh -y"
-
-RUN rm -rf /home/runner/.spack
 RUN bash -l -c "spack bootstrap now"
 
 RUN echo -e "spack env activate /home/runner/environment\n" >> /home/runner/.bashrc
@@ -142,12 +142,18 @@ RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/
 RUN bash -l -c "module load intel-oneapi-compilers && spack compiler find $COMPILER_ROOT"
 
 RUN bash -l -c "spack concretize"
-RUN bash -l -c "cd /home/runner && spack env depfile -o Makefile"
-# Just in case a mirror fails to pull, retry the spack install so that we can preserve
-# all of the packages that did build successfully
-RUN bash -l -c "cd /home/runner && make -j6 || true"
-RUN bash -l -c "cd /home/runner && make -j6"
-RUN rm /home/runner/Makefile
+# Export spack environment into a Makefile and run
+# `make` twice to mimic a retry if a pull from spack mirror fails.
+# Perform all the related cleanup under a single RUN to avoid
+# including ghost files in the final image layer.
+RUN bash -l -c " \
+    cd /home/runner && \
+    spack env depfile -o Makefile && \
+    (make -j6 || true) && \
+    make -j6 && \
+    spack clean --downloads && \
+    rm Makefile && \
+    rm -rf .cache"
 
 ENV OMPI_ALLOW_RUN_AS_ROOT=1
 ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1

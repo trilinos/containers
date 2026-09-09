@@ -26,8 +26,10 @@ RUN bash -l -c "spack bootstrap now"
 ARG compiler_version=
 
 RUN bash -l -c "spack compiler find"
-RUN bash -l -c "spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64 || true"
-RUN bash -l -c "spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64"
+RUN bash -l -c " \
+    (spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64 || true) && \
+    spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64 && \
+    spack clean --downloads"
 
 RUN bash -l -c "spack module tcl refresh -y"
 RUN rm -rf /home/runner/.spack
@@ -62,10 +64,6 @@ spack:\n\
     - openmpi${mpi_version}+cuda\n\
     - matio\n\
     - python\n\
-    - binder\n\
-    - py-mpi4py\n\
-    - py-numpy\n\
-    - py-pybind11\n\
     - netlib-lapack\n\
     - googletest\n\
   concretizer:\n\
@@ -149,13 +147,18 @@ modules:\n\
 RUN echo -e "spack env activate /home/runner/environment\n" >> /home/runner/.bashrc
 
 RUN bash -l -c "spack concretize --force --fresh"
-RUN bash -l -c "cd /home/runner && spack env depfile -o Makefile"
-# Just in case a mirror fails to pull, retry the spack install so that we can preserve
-# all of the packages that did build successfully
-RUN bash -l -c "cd /home/runner && make -j24 || true"
-RUN bash -l -c "cd /home/runner && make -j24 || true"
-RUN bash -l -c "cd /home/runner && make -j24"
-RUN rm /home/runner/Makefile
+# Export spack environment into a Makefile and run
+# `make` twice to mimic a retry if a pull from spack mirror fails.
+# Perform all the related cleanup under a single RUN to avoid
+# including ghost files in the final image layer.
+RUN bash -l -c " \
+    cd /home/runner && \
+    spack env depfile -o Makefile && \
+    (make -j24 || true) && \
+    make -j24 && \
+    spack clean --downloads && \
+    rm Makefile && \
+    rm -rf .cache"
 
 ENV OMPI_ALLOW_RUN_AS_ROOT=1
 ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
@@ -191,10 +194,6 @@ module load superlu-dist\n\
 module load zlib\n\
 module load matio\n\
 module load python\n\
-module load binder\n\
-module load py-mpi4py\n\
-module load py-numpy\n\
-module load py-pybind11\n\
 module load netlib-lapack\n\
 module load emacs\n\
 module load gh\n\
