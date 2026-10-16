@@ -1,7 +1,7 @@
 #/bin/bash
 
 ROCM_VERSION=7.2.1
-COMPILER_VERSION=22.1.5 # clang
+COMPILER_VERSION=22.0.0 # rocm 7.2.1 provides clang 22.0.0
 OPENMPI_VERSION=4.1.6
 CPU_ARCH=zen4
 GPU_ARCH=gfx942

@@ -10,7 +10,7 @@ RUN yum -y --setopt=tsflags=nodocs update && yum clean all
 
 RUN yum -y install gcc gcc-c++ gcc-gfortran libatomic xz bzip2 patch diffutils file make git python python3-pip procps gettext unzip libX11-devel environment-modules
 
-# flang needs quadmath.h provided by system gcc, but clang ignores gcc's include directories
+# Building flang needs quadmath.h provided by system gcc, but clang ignores gcc's include directories
 RUN ln -s /usr/lib/gcc/x86_64-redhat-linux/*/include/quadmath*.h /usr/include/
 
 RUN useradd runner
@@ -257,7 +257,7 @@ RUN sed -i "s/^\(ARG AT2_image=\).*/\1${AT2_image}/" ${AT2_ARTIFACTS_DIR}/Docker
 RUN sed -i "s|^\(ARG AT2_image_fullpath=\).*|\1${AT2_image_fullpath}|" ${AT2_ARTIFACTS_DIR}/Dockerfile
 RUN sed -i "s/^\(ARG compiler_version=\).*/\1${compiler_version}/" ${AT2_ARTIFACTS_DIR}/Dockerfile
 RUN sed -i "s/^\(ARG mpi_version=\).*/\1${mpi_version}/" ${AT2_ARTIFACTS_DIR}/Dockerfile
-RUN sed -i "s/^\(ARG cuda_version=\).*/\1${cuda_version}/" ${AT2_ARTIFACTS_DIR}/Dockerfile
+RUN sed -i "s/^\(ARG rocm_version=\).*/\1${rocm_version}/" ${AT2_ARTIFACTS_DIR}/Dockerfile
 
 USER root
 RUN echo -e "source /home/runner/.bashrc" >> /root/.bashrc
