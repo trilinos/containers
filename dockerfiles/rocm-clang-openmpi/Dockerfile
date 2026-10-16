@@ -73,6 +73,7 @@ spack:
     - rocblas ~hipblaslt
     - rocsolver
     - rocsparse
+    - rocthrust
   specs:
   - matrix:
     - [\$rocm_pkgs]
