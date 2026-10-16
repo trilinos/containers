@@ -168,18 +168,12 @@ modules:
             'COMPILER_ROOT': '{prefix}'
 EOF
 
-RUN bash -l -c "spack module tcl refresh -y"
+RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-${cpu_arch}\" >> /home/runner/.bashrc"
 
 RUN echo -e "spack env activate /home/runner/environment\n" >> /home/runner/.bashrc
-# LLVM built targeting given cpu_arch located here
-RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-${cpu_arch}\" >> /home/runner/.bashrc"
-# Moduling loading LLVM requires the system GCC runtime located here
-#RUN bash -l -c "echo \"export MODULEPATH=\\\${MODULEPATH}:/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64_v4\" >> /home/runner/.bashrc"
-## GCC runtime requires glibc located here
-#RUN bash -l -c "echo \"export MODULEPATH=\\\${MODULEPATH}:/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64\" >> /home/runner/.bashrc"
-
 RUN bash -l -c "spack external find python"
 RUN bash -l -c "spack concretize --fresh --force"
+
 # Export spack environment into a Makefile and run
 # `make` twice to mimic a retry if a pull from spack mirror fails.
 # Perform all the related cleanup under a single RUN to avoid
