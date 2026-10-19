@@ -167,6 +167,11 @@ modules:
         environment:
           set:
             'COMPILER_ROOT': '{prefix}'
+      hip:
+        environment:
+          set:
+            'ROCM_PATH': /home/runner/rocm
+            'HIP_PATH': /home/runner/rocm
 EOF
 
 RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-${cpu_arch}\" >> /home/runner/.bashrc"
