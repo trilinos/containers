@@ -60,7 +60,6 @@ spack:\n\
     - googletest\n\
     - fmt\n\
     - unzip\n\
-    - scotch\n\
   concretizer:\n\
     unify: when_possible\n\
   specs:\n\
@@ -196,7 +195,6 @@ module load netlib-lapack\n\
 module load emacs\n\
 module load gh\n\
 module load googletest\n\
-module load scotch\n\
 \n\
 export CCACHE_NODISABLE=true\n\
 export CCACHE_BASEDIR=$HOME\n\
