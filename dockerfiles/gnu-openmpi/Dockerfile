@@ -57,6 +57,7 @@ spack:\n\
     - openmpi${mpi_version}\n\
     - matio\n\
     - netlib-lapack\n\
+    - googletest\n\
     - fmt\n\
     - unzip\n\
     - scotch\n\
@@ -66,14 +67,13 @@ spack:\n\
   - matrix:\n\
     - [\$packages]\n\
     - [\$%compiler]\n\
-  - ccache%gcc\n\
+  - ccache\n\
   - gdb\n\
   - valgrind\n\
   - cmake\n\
   - ninja\n\
   - emacs\n\
   - gh\n\
-  - googletest\n\
   view: false\n\
   packages:\n\
     all:\n\
@@ -139,10 +139,8 @@ modules:\n\
             'COMPILER_ROOT': '{prefix}'" >> /home/runner/environment/modules.yaml
 
 RUN bash -l -c "spack module tcl refresh -y"
-
 RUN rm -rf /home/runner/.spack
 RUN bash -l -c "spack bootstrap now"
-
 RUN echo -e "spack env activate /home/runner/environment\n" >> /home/runner/.bashrc
 RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64\" >> /home/runner/.bashrc"
 RUN bash -l -c "module load gcc && spack compiler find $COMPILER_ROOT"
@@ -211,7 +209,7 @@ if [ -d /ccache-dir ]; then\n\
 else\n\
   export CCACHE_DIR=$HOME/ccache-dir\n\
   mkdir -p \$CCACHE_DIR\n\
-fi">> /home/runner/.bashrc
+fi" >> /home/runner/.bashrc
 
 # Setup artifact Dockerfile in image
 ENV AT2_ARTIFACTS_DIR=/home/runner/artifacts

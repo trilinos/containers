@@ -31,12 +31,6 @@ RUN bash -l -c " \
     spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64 && \
     spack clean --downloads"
 
-RUN bash -l -c "spack module tcl refresh -y"
-RUN rm -rf /home/runner/.spack
-RUN bash -l -c "spack bootstrap now"
-RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64\" >> /home/runner/.bashrc"
-RUN bash -l -c "module load gcc && spack compiler find"
-
 ARG mpi_version=
 ARG cuda_version=
 
@@ -144,7 +138,12 @@ modules:\n\
           set:\n\
             'COMPILER_ROOT': '{prefix}'" >> /home/runner/environment/modules.yaml
 
+RUN bash -l -c "spack module tcl refresh -y"
+RUN rm -rf /home/runner/.spack
+RUN bash -l -c "spack bootstrap now"
 RUN echo -e "spack env activate /home/runner/environment\n" >> /home/runner/.bashrc
+RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64\" >> /home/runner/.bashrc"
+RUN bash -l -c "module load gcc && spack compiler find $COMPILER_ROOT"
 
 RUN bash -l -c "spack concretize --force --fresh"
 # Export spack environment into a Makefile and run
@@ -174,12 +173,12 @@ ENV AT2_IMAGE_FULLPATH=${AT2_image_fullpath}
 
 RUN bash -l -c "spack module tcl refresh -y %gcc${compiler_version}"
 RUN echo -e "\
-module load gcc\n\
-module load openmpi\n\
-module load cuda\n\
 module load ccache\n\
 module load valgrind\n\
 module load gdb\n\
+module load gcc\n\
+module load openmpi\n\
+module load cuda\n\
 module load cmake\n\
 module load ninja\n\
 module load boost\n\
