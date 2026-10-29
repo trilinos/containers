@@ -1,5 +1,5 @@
 # Pinned to amd64 ubi8.10-1778062799
-ARG base_image=registry.access.redhat.com/ubi8/ubi@sha256:e0d0b2e84164f306c81145d1d98a26b03a9d7358dea578684ce4749eb7542cad
+ARG base_image=registry.access.redhat.com/ubi8/ubi@sha256:26678dc0aac74597468a444803499c3f2319491e4507777126bc4f6cb94dfab8
 FROM ${base_image}
 
 # Disable all host repositories so that we're only using things from UBI
