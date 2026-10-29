@@ -1,5 +1,5 @@
 # Pinned to amd64 ubi8.10-1778062799
-ARG base_image=registry.access.redhat.com/ubi8/ubi@sha256:e0d0b2e84164f306c81145d1d98a26b03a9d7358dea578684ce4749eb7542cad
+ARG base_image=registry.access.redhat.com/ubi8/ubi@sha256:26678dc0aac74597468a444803499c3f2319491e4507777126bc4f6cb94dfab8
 FROM ${base_image}
 
 # Disable all host repositories so that we're only using things from UBI
@@ -31,12 +31,6 @@ RUN bash -l -c " \
     spack -C /home/runner install --deprecated gcc${compiler_version} target=x86_64 && \
     spack clean --downloads"
 
-RUN bash -l -c "spack module tcl refresh -y"
-RUN rm -rf /home/runner/.spack
-RUN bash -l -c "spack bootstrap now"
-RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64\" >> /home/runner/.bashrc"
-RUN bash -l -c "module load gcc && spack compiler find"
-
 ARG mpi_version=
 ARG cuda_version=
 
@@ -66,6 +60,7 @@ spack:\n\
     - python\n\
     - netlib-lapack\n\
     - googletest\n\
+    - scotch\n\
   concretizer:\n\
     unify: when_possible\n\
   specs:\n\
@@ -144,7 +139,12 @@ modules:\n\
           set:\n\
             'COMPILER_ROOT': '{prefix}'" >> /home/runner/environment/modules.yaml
 
+RUN bash -l -c "spack module tcl refresh -y"
+RUN rm -rf /home/runner/.spack
+RUN bash -l -c "spack bootstrap now"
 RUN echo -e "spack env activate /home/runner/environment\n" >> /home/runner/.bashrc
+RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64\" >> /home/runner/.bashrc"
+RUN bash -l -c "module load gcc && spack compiler find $COMPILER_ROOT"
 
 RUN bash -l -c "spack concretize --force --fresh"
 # Export spack environment into a Makefile and run
@@ -174,12 +174,12 @@ ENV AT2_IMAGE_FULLPATH=${AT2_image_fullpath}
 
 RUN bash -l -c "spack module tcl refresh -y %gcc${compiler_version}"
 RUN echo -e "\
-module load gcc\n\
-module load openmpi\n\
-module load cuda\n\
 module load ccache\n\
 module load valgrind\n\
 module load gdb\n\
+module load gcc\n\
+module load openmpi\n\
+module load cuda\n\
 module load cmake\n\
 module load ninja\n\
 module load boost\n\
@@ -198,6 +198,7 @@ module load netlib-lapack\n\
 module load emacs\n\
 module load gh\n\
 module load googletest\n\
+module load scotch\n\
 \n\
 export CCACHE_NODISABLE=true\n\
 export CCACHE_BASEDIR=$HOME\n\
