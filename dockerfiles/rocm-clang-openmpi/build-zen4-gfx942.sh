@@ -15,7 +15,7 @@ if [[ "${BUILDER}" == "" ]]; then
   exit 1
 fi
 
-TAG=$(date +%Y%m%d-%H%M%S)
+TAG=${CPU_ARCH}-${GPU_ARCH}-$(date +%Y%m%d-%H%M%S)
 
 nohup ${BUILDER} build \
         --build-arg=rocm_version="@${ROCM_VERSION}" \
