@@ -8,7 +8,7 @@ FROM ${base_image}
 RUN rm -rf /etc/rhsm-host
 RUN yum -y --setopt=tsflags=nodocs update && yum clean all
 
-RUN yum -y install gcc gcc-c++ gcc-gfortran libatomic xz bzip2 patch diffutils file make git python python3-pip procps gettext unzip libX11-devel environment-modules
+RUN yum -y install gcc gcc-c++ gcc-gfortran libatomic xz bzip2 patch diffutils file make git python python3-pip procps gettext unzip libX11-devel environment-modules zlib-devel
 
 # Building flang needs quadmath.h provided by system gcc, but clang ignores gcc's include directories
 RUN ln -s /usr/lib/gcc/x86_64-redhat-linux/*/include/quadmath*.h /usr/include/
