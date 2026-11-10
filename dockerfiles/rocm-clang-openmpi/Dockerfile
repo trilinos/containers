@@ -8,7 +8,7 @@ FROM ${base_image}
 RUN rm -rf /etc/rhsm-host
 RUN yum -y --setopt=tsflags=nodocs update && yum clean all
 
-RUN yum -y install gcc gcc-c++ gcc-gfortran libatomic xz bzip2 patch diffutils file make git python python3-pip procps gettext unzip libX11-devel environment-modules
+RUN yum -y install gcc gcc-c++ gcc-gfortran libatomic xz bzip2 patch diffutils file make git python python3-pip procps gettext unzip libX11-devel environment-modules zlib-devel
 
 # Building flang needs quadmath.h provided by system gcc, but clang ignores gcc's include directories
 RUN ln -s /usr/lib/gcc/x86_64-redhat-linux/*/include/quadmath*.h /usr/include/
@@ -41,6 +41,7 @@ ARG mpi_version=
 
 RUN mkdir /home/runner/environment
 
+# ROCM verions < 7 do not provide flang, use gcc
 RUN LLVM_PREFIX=$(/home/runner/spack/bin/spack location -i llvm-amdgpu${rocm_version}+link_llvm_dylib) && \
 cat > /home/runner/environment/spack.yaml <<EOF
 spack:
@@ -56,13 +57,12 @@ spack:
           compilers:
             c: ${LLVM_PREFIX}/bin/clang
             cxx: ${LLVM_PREFIX}/bin/clang++
-            fortran: ${LLVM_PREFIX}/bin/flang
     c:
       require: ['llvm-amdgpu${rocm_version}']
     cxx:
       require: ['llvm-amdgpu${rocm_version}']
     fortran:
-      require: ['llvm-amdgpu${rocm_version}']
+      require: ['gcc']
     all:
       variants: ['amdgpu_target=${gpu_arch}']
       target: [${cpu_arch}]

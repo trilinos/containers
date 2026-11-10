@@ -44,26 +44,26 @@ DEPLOYS = [
         "production": True,
     },
     {
-        "image_name": "ubi9-rocm-7.2.1-clang-22.0.0-openmpi-4.1.6-zen4-gfx942",
+        "image_name": "ubi9-rocm-6.4.3-clang-19.0.0-openmpi-4.1.6-zen4-gfx942",
         "dockerfile": "rocm-clang-openmpi",
         "build_args":
         {
-            "compiler_version": "@22.0.0",
+            "compiler_version": "@19.0.0",
             "mpi_version": "@4.1.6",
-            "rocm_version": "@7.2.1",
+            "rocm_version": "@6.4.3",
             "cpu_arch": "zen4",
             "gpu_arch": "gfx942"
         },
         "production": True,
     },
     {
-        "image_name": "ubi9-rocm-7.2.1-clang-22.0.0-openmpi-4.1.6-x86_64-gfx942",
+        "image_name": "ubi9-rocm-6.4.3-clang-19.0.0-openmpi-4.1.6-x86_64-gfx942",
         "dockerfile": "rocm-clang-openmpi",
         "build_args":
         {
-            "compiler_version": "@22.0.0",
+            "compiler_version": "@19.0.0",
             "mpi_version": "@4.1.6",
-            "rocm_version": "@7.2.1",
+            "rocm_version": "@6.4.3",
             "cpu_arch": "x86_64_v4",
             "gpu_arch": "gfx942"
         },
