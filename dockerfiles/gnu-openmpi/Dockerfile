@@ -1,5 +1,5 @@
 # Pinned to amd64 ubi8.10-1778062799
-ARG base_image=registry.access.redhat.com/ubi8/ubi@sha256:e0d0b2e84164f306c81145d1d98a26b03a9d7358dea578684ce4749eb7542cad
+ARG base_image=registry.access.redhat.com/ubi8/ubi@sha256:26678dc0aac74597468a444803499c3f2319491e4507777126bc4f6cb94dfab8
 FROM ${base_image}
 
 # Disable all host repositories so that we're only using things from UBI
@@ -57,23 +57,22 @@ spack:\n\
     - openmpi${mpi_version}\n\
     - matio\n\
     - netlib-lapack\n\
+    - googletest\n\
     - fmt\n\
     - unzip\n\
-    - scotch\n\
   concretizer:\n\
     unify: when_possible\n\
   specs:\n\
   - matrix:\n\
     - [\$packages]\n\
     - [\$%compiler]\n\
-  - ccache%gcc\n\
+  - ccache\n\
   - gdb\n\
   - valgrind\n\
   - cmake\n\
   - ninja\n\
   - emacs\n\
   - gh\n\
-  - googletest\n\
   view: false\n\
   packages:\n\
     all:\n\
@@ -139,10 +138,8 @@ modules:\n\
             'COMPILER_ROOT': '{prefix}'" >> /home/runner/environment/modules.yaml
 
 RUN bash -l -c "spack module tcl refresh -y"
-
 RUN rm -rf /home/runner/.spack
 RUN bash -l -c "spack bootstrap now"
-
 RUN echo -e "spack env activate /home/runner/environment\n" >> /home/runner/.bashrc
 RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64\" >> /home/runner/.bashrc"
 RUN bash -l -c "module load gcc && spack compiler find $COMPILER_ROOT"
@@ -198,7 +195,6 @@ module load netlib-lapack\n\
 module load emacs\n\
 module load gh\n\
 module load googletest\n\
-module load scotch\n\
 \n\
 export CCACHE_NODISABLE=true\n\
 export CCACHE_BASEDIR=$HOME\n\
@@ -211,7 +207,7 @@ if [ -d /ccache-dir ]; then\n\
 else\n\
   export CCACHE_DIR=$HOME/ccache-dir\n\
   mkdir -p \$CCACHE_DIR\n\
-fi">> /home/runner/.bashrc
+fi" >> /home/runner/.bashrc
 
 # Setup artifact Dockerfile in image
 ENV AT2_ARTIFACTS_DIR=/home/runner/artifacts
