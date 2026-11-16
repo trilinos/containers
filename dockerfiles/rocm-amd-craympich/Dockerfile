@@ -10,11 +10,12 @@ RUN yum -y --setopt=tsflags=nodocs update && yum clean all
 
 RUN yum -y install gcc gcc-c++ xz bzip2 patch diffutils file make git python38 procps
 
-RUN git clone https://github.com/spack/spack.git /spack && cd /spack && git checkout bd519af8bc62a6f9eea6f4c0fa0bf498a0cc0dfb
-RUN echo -e "export SPACK_ROOT=/spack\nsource /spack/share/spack/setup-env.sh\n" > /etc/profile.d/spack.sh
+# Pinned spack to v1.2.2
+RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout 3e19345b6e12f5ff1b874f4059622fc6a1fd804a
+RUN echo -e "export SPACK_ROOT=/home/runner/spack\nsource /home/runner/spack/share/spack/setup-env.sh\n" >> /home/runner/.bashrc
 RUN bash -l -c "spack config add config:build_jobs:64"
-# Pinned spack-packages to v2025.11.0
-RUN bash -l -c "spack repo update builtin --scope defaults --commit 119680aeee8ea802c6111b7167583bddef97e82f"
+# Pinned spack-packages to v2026.10.1
+RUN bash -l -c "spack repo update builtin --scope defaults --commit 3ebd010da9b44edbfd14adc1f08d2c1a129e3f6a"
 RUN bash -l -c "spack bootstrap now"
 
 ARG compiler_version=
