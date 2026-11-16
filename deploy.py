@@ -117,7 +117,7 @@ if args.list:
 if not args.skip_login:
     subprocess.check_call(
         [
-            "docker",
+            "podman",
             "login",
             "-u",
             "gitlab+deploy-token-23",
