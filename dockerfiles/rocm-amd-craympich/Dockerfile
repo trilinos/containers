@@ -1,4 +1,6 @@
-FROM registry.access.redhat.com/ubi8:latest
+# Pinned to amd64 ubi8.10-1794418922
+ARG base_image=registry.access.redhat.com/ubi8/ubi@sha256:a39932231867d5289996e8deec63e2290092ed0bdf322b1863141bb0f880ac0c
+FROM ${base_image}
 
 # Disable all host repositories so that we're only using things from UBI
 # (in the event that you're building a UBI container on a RHEL host, RedHat
