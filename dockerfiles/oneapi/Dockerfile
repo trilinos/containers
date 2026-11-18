@@ -64,7 +64,7 @@ spack:\n\
   - matrix:\n\
     - [\$packages]\n\
     - [\$%compiler]\n\
-  - ccache%gcc\n\
+  - ccache%%gcc\n\
   - gdb\n\
   - valgrind\n\
   - cmake\n\
