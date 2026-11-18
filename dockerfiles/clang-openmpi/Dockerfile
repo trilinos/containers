@@ -140,7 +140,7 @@ RUN bash -l -c "spack module tcl refresh -y"
 RUN echo -e "spack env activate /home/runner/environment\n" >> /home/runner/.bashrc
 RUN bash -l -c "echo \"export MODULEPATH=/home/runner/spack/share/spack/modules/linux-\\\$(spack arch --operating-system)-x86_64\" >> /home/runner/.bashrc"
 RUN bash -l -c "export FC=\$(type -p gfortran) >> /home/runner/.bashrc"
-RUN bash -l -c "module load llvm && spack compiler find --mixed-toolchain $COMPILER_ROOT"
+RUN bash -l -c "module load llvm && spack compiler find $COMPILER_ROOT"
 
 RUN bash -l -c "spack external find python"
 RUN bash -l -c "spack concretize"
