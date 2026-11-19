@@ -1,5 +1,5 @@
-# Pinned to amd64 ubi9.7-1778044007
-ARG base_image=registry.access.redhat.com/ubi9/ubi@sha256:f9a905cb655db94303bb2a37f150256a4d24c5ef7da07071888b41b52b588e5b
+# Pinned to amd64 ubi9.9-1794466612
+ARG base_image=registry.access.redhat.com/ubi9/ubi@sha256:3c3fa194551e503333f03a017bf418fc1f658545db1e2df1e58ccc67e203c324
 FROM ${base_image}
 
 # Disable all host repositories so that we're only using things from UBI
@@ -13,11 +13,12 @@ RUN yum -y install gcc gcc-c++ xz bzip2 patch diffutils file make git python pro
 RUN useradd runner
 USER runner
 
-RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout bd519af8bc62a6f9eea6f4c0fa0bf498a0cc0dfb
+# Pinned spack to v1.2.2
+RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout 3e19345b6e12f5ff1b874f4059622fc6a1fd804a
 RUN echo -e "export SPACK_ROOT=/home/runner/spack\nsource /home/runner/spack/share/spack/setup-env.sh\n" >> /home/runner/.bashrc
 RUN bash -l -c "spack config add config:build_jobs:64"
-# Pinned spack-packages to v2025.11.0
-RUN bash -l -c "spack repo update builtin --scope defaults --commit 119680aeee8ea802c6111b7167583bddef97e82f"
+# Pinned spack-packages to v2026.10.1
+RUN bash -l -c "spack repo update builtin --scope defaults --commit 3ebd010da9b44edbfd14adc1f08d2c1a129e3f6a"
 RUN bash -l -c "spack bootstrap now"
 
 ARG compiler_version=
@@ -63,7 +64,7 @@ spack:\n\
   - matrix:\n\
     - [\$packages]\n\
     - [\$%compiler]\n\
-  - ccache%gcc\n\
+  - ccache%%gcc\n\
   - gdb\n\
   - valgrind\n\
   - cmake\n\

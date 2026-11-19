@@ -1,5 +1,5 @@
-# Pinned to amd64 ubi8.10-1778062799
-ARG base_image=registry.access.redhat.com/ubi8/ubi@sha256:e0d0b2e84164f306c81145d1d98a26b03a9d7358dea578684ce4749eb7542cad
+# Pinned to amd64 ubi8.10-1794418922
+ARG base_image=registry.access.redhat.com/ubi8/ubi@sha256:a39932231867d5289996e8deec63e2290092ed0bdf322b1863141bb0f880ac0c
 FROM ${base_image}
 
 # Disable all host repositories so that we're only using things from UBI
@@ -16,11 +16,12 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN useradd runner
 USER runner
 
-RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout bd519af8bc62a6f9eea6f4c0fa0bf498a0cc0dfb
+# Pinned spack to v1.2.2
+RUN git clone https://github.com/spack/spack.git /home/runner/spack && cd /home/runner/spack && git checkout 3e19345b6e12f5ff1b874f4059622fc6a1fd804a
 RUN echo -e "export SPACK_ROOT=/home/runner/spack\nsource /home/runner/spack/share/spack/setup-env.sh\n" >> /home/runner/.bashrc
 RUN bash -l -c "spack config add config:build_jobs:64"
-# Pinned spack-packages to v2025.11.0
-RUN bash -l -c "spack repo update builtin --scope defaults --commit 119680aeee8ea802c6111b7167583bddef97e82f"
+# Pinned spack-packages to v2026.10.1
+RUN bash -l -c "spack repo update builtin --scope defaults --commit 3ebd010da9b44edbfd14adc1f08d2c1a129e3f6a"
 RUN bash -l -c "spack bootstrap now"
 
 RUN bash -l -c "spack compiler find"
